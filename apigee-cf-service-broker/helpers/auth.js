@@ -43,7 +43,7 @@ var staticauth = function (req, res, next) {
     return unauthorized(res)
   }
 
-  if (user.name === config.get('SECURITY_USER_NAME') && user.pass === config.get('SECURITY_USER_PASSWORD')) {
+  if (user.name === config.default.get('SECURITY_USER_NAME') && user.pass === config.default.get('SECURITY_USER_PASSWORD')) {
     return next()
   } else {
     return unauthorized(res)
@@ -147,7 +147,7 @@ module.exports = function (options) {
     apigeeuserauth: apigeeuserauth
   }
   if (options === config) {
-      options = config.get('auth')
+      options = config.default.get('auth')
   }
   return auths[options]
 }

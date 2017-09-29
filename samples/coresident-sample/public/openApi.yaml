@@ -1,0 +1,176 @@
+swagger: "2.0"
+info:
+  version: 1.0.0
+  title: Apigee Open API Extensions Example
+  license:
+    name: MIT
+host: 127.0.0.1:3000
+basePath: /
+schemes:
+  - http
+consumes:
+  - application/json
+  - application/x-www-form-urlencoded
+produces:
+  - application/json
+  - application/xml
+x-apigee-policies:
+  myQuotaName:
+    type: quota
+    options:
+      allow: 15
+      timeUnit: minute
+      interval: 1
+  mySpikeArrest:
+    type: spikeArrest
+    options:
+      allow: 12
+      timeUnit: minute
+  myResponseCache:
+    type: responseCache
+    options:
+      time: 6000
+      identifier: request.uri
+  myJsonToXml:
+    type: jsonToXml
+    options:
+      on: response
+  myXmlToJson:
+    type: xmlToJson
+    options:
+      on: response
+  mySecureApi1:
+    type: verifyApiKey
+    options:
+      in: header
+      keyName: apikey
+  mySecureApi2:
+    type: oAuthV2
+    options:
+      operation: verifyAccessToken
+x-apigee-apply:
+  mySpikeArrest:
+    options:
+      on: request
+      endPoint: proxy
+      flow: preFlow
+  myQuotaName:
+    options:
+      on: response
+      endPoint: target
+      flow: preFlow
+paths:
+  /:
+    get:
+      x-apigee-apply:
+        myJsonToXml:
+          options:
+            on: response
+            endPoint: target
+      summary: Hello World App for Cloud Foundry
+      operationId: helloWorld
+      responses:
+        200:
+          description: A Json response with hello message
+        default:
+          description: unexpected error
+          schema:
+            $ref: "#/definitions/Error"
+  /hello/{name}:
+    get:
+      x-apigee-apply:
+        myResponseCache:
+          options:
+            on: request,response
+            endPoint: proxy
+      summary: Hello User Name greeting
+      operationId: greetUser
+      parameters:
+        - name: name
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: Hello user :username
+        default:
+          description: unexpected error
+          schema:
+            $ref: "#/definitions/Error"
+  /hello/user:
+    post:
+      x-apigee-apply:
+        myXmlToJson:
+          options:
+            on: response
+            endPoint: target
+      summary: Create User Info
+      operationId: createUserInfo
+      parameters:
+        - name: name
+          in: formData
+          description: User Name
+          required: true
+          type: string
+      responses:
+        200:
+          description: Created Message
+        default:
+          description: unexpected error
+          schema:
+            $ref: "#/definitions/Error"
+    put:
+      x-apigee-apply:
+        myXmlToJson:
+          options:
+            on: response
+            endPoint: target
+      summary: Updated User Info
+      operationId: updateUserInfo
+      parameters:
+        - name: name
+          in: formData
+          description: User Name
+          required: true
+          type: string
+      responses:
+        200:
+          description: Created Message
+        default:
+          description: unexpected error
+          schema:
+            $ref: "#/definitions/Error"
+    delete:
+      x-apigee-apply:
+        myXmlToJson:
+          options:
+            on: response
+            endPoint: target
+      security:
+        - mySecureApi1: []
+      summary: delete User Info
+      operationId: deleteUserInfo
+      parameters:
+        - name: name
+          in: formData
+          description: User Name
+          required: true
+          type: string
+      responses:
+        200:
+          description: Created Message
+        default:
+          description: unexpected error
+          schema:
+            $ref: "#/definitions/Error"
+definitions:
+  Error:
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string

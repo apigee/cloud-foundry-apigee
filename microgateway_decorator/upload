@@ -1,0 +1,16 @@
+#!/bin/bash
+
+SRCDIR=$(cd "$(dirname $0)/."  && pwd)
+TGTDIR=$(cd "$(dirname $0)/." && pwd)
+NAME=$(basename "$SRCDIR" | sed s/-/_/g)
+ZIPFILE="$TGTDIR/$NAME.zip"
+
+echo "Buildpack name: $NAME"
+echo "Source directory: $SRCDIR"
+echo "Target file: $ZIPFILE"
+
+rm -f "$ZIPFILE"
+zip -r "$ZIPFILE" "$SRCDIR"/bin "$SRCDIR"/lib
+
+cf delete-buildpack -f "$NAME"
+cf create-buildpack "$NAME" "$ZIPFILE" 99 --enable

@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# bin/compile <build-dir> <cache-dir> <env-dir>
+
+BIN_DIR=$(cd $(dirname $0); pwd)
+ROOT_DIR=$(dirname $BIN_DIR)
+BUILD_DIR=$1
+CACHE_DIR=$2
+ENV_DIR=$3
+
+mkdir -p $BUILD_DIR/tmp/node
+mkdir -p $BUILD_DIR/tmp/edgemicro
+
+wget --quiet https://nodejs.org/dist/v6.11.3/node-v6.11.3-linux-x64.tar.gz
+tar --touch --strip-components 1 -xzf node-v6.11.3-linux-x64.tar.gz -C $BUILD_DIR/tmp/node
+rm node-v6.11.3-linux-x64.tar.gz
+export PATH=$PATH:${BUILD_DIR}/tmp/node/bin
+# npm --prefix $BUILD_DIR/tmp/edgemicro install edgemicro
+git clone https://github.com/apigee-internal/microgateway.git $BUILD_DIR/tmp/edgemicro
+(cd $BUILD_DIR/tmp/edgemicro && git checkout tags/v.2.5.4)
+npm --prefix $BUILD_DIR/tmp/edgemicro install
+
+mkdir -p $BUILD_DIR/microgateway
+cp $ROOT_DIR/lib/microgateway.js $BUILD_DIR/microgateway
+cp $ROOT_DIR/lib/package.json $BUILD_DIR/microgateway
+npm --prefix $BUILD_DIR/microgateway install
+
+if [ "$EDGEMICRO_CUST_PLUGINS" ]; then
+    cp -a $BUILD_DIR/$EDGEMICRO_CUST_PLUGINS/. $BUILD_DIR/tmp/edgemicro/plugins
+fi
+
+mkdir -p $BUILD_DIR/.profile.d
+cp $ROOT_DIR/lib/microgateway.sh $BUILD_DIR/.profile.d

@@ -1,0 +1,8 @@
+---
+applications:
+- name: sample
+  memory: 600M
+  instances: 1
+  host: sample
+  path: .
+  buildpack: nodejs_buildpack

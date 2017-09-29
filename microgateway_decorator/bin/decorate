@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# bin/decorate <build-dir>
+
+BIN_DIR=$(cd $(dirname $0); pwd)
+ROOT_DIR=$(dirname $BIN_DIR)
+BUILD_DIR=$1
+
+export PYTHONPATH="${PYTHONPATH}:$ROOT_DIR/lib"
+python -c 'from microgateway import detect; detect()'

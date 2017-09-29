@@ -1,0 +1,12 @@
+---
+applications:
+- name: sample
+  memory: 1G
+  instances: 1
+  host: sample
+  path: .
+  env:
+    EDGEMICRO_CONFIG_DIR: /app/config
+    EDGEMICRO_ENV: <your-microgateway-env-name>
+    EDGEMICRO_ORG: <your-microgateway-org-name>
+    #  EDGEMICRO_CUST_PLUGINS: plugins

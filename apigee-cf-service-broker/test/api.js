@@ -28,11 +28,11 @@ var app
 var catalogData = require('../helpers/catalog_data')
 var config = require('../helpers/config')
 
-//require('./helpers/api_mocks.js')
+require('./helpers/api_mocks.js')
 
 describe('Component APIs', function () {
   this.timeout(0)
-  var authHeader = 'Basic ' + new Buffer(config.get('SECURITY_USER_NAME') + ':' + config.get('SECURITY_USER_PASSWORD')).toString('base64')
+  var authHeader = 'Basic ' + new Buffer(config.default.get('SECURITY_USER_NAME') + ':' + config.default.get('SECURITY_USER_PASSWORD')).toString('base64')
   var badAuthHeader = 'Basic ' + new Buffer('admin:' + 'wrong-password').toString('base64')
   before('Starting test server', function () {  // eslint-disable-line
     app = server.listen(8000)
@@ -114,7 +114,11 @@ describe('Component APIs', function () {
           organization_guid: 'org-guid-here',
           plan_id: catalogData.guid.org,
           service_id: 'service-guid-here',
-          space_guid: 'space-guid-here'
+          space_guid: 'space-guid-here',
+          parameters: {
+            org: 'org-name-here',
+            env: 'env-name-here',
+          }
         }
       }
       api.put('/v2/service_instances/' + serviceInstance.instance_id)
@@ -129,14 +133,614 @@ describe('Component APIs', function () {
           done()
         })
     })
+
+    it('Request with missing org/env mapping should return a 400 response', function (done) {
+      var serviceInstance = {
+        instance_id: 'instance-guid-here',
+        payload: {
+          organization_guid: 'org-guid-here',
+          plan_id: catalogData.guid.org,
+          service_id: 'service-guid-here',
+          space_guid: 'space-guid-here',
+          parameters: {
+          }
+        }
+      }
+      api.put('/v2/service_instances/' + serviceInstance.instance_id)
+        .send(serviceInstance.payload)
+        .set('Accept', 'application/json')
+        .set('Authorization', authHeader)
+        .expect(400, done)
+    })
+
+    it('Request with incorrect org to env mapping should return a 400 response', function (done) {
+      var serviceInstance = {
+        instance_id: 'instance-guid-here',
+        payload: {
+          organization_guid: 'org-guid-here',
+          plan_id: catalogData.guid.org,
+          service_id: 'service-guid-here',
+          space_guid: 'space-guid-here',
+          parameters: {
+            org: 'invalid-org',
+            env: 'env-name-here',
+          }
+        }
+      }
+      api.put('/v2/service_instances/' + serviceInstance.instance_id)
+        .send(serviceInstance.payload)
+        .set('Accept', 'application/json')
+        .set('Authorization', authHeader)
+        .expect(400, done)
+    })
+
+    it('Request with missing org should return a 400 response', function (done) {
+      var serviceInstance = {
+        instance_id: 'instance-guid-here',
+        payload: {
+          organization_guid: 'org-guid-here',
+          plan_id: catalogData.guid.org,
+          service_id: 'service-guid-here',
+          space_guid: 'space-guid-here',
+          parameters: {
+            env: 'env-name-here',
+          }
+        }
+      }
+      api.put('/v2/service_instances/' + serviceInstance.instance_id)
+        .send(serviceInstance.payload)
+        .set('Accept', 'application/json')
+        .set('Authorization', authHeader)
+        .expect(400, done)
+    })
+
+    it('Request with missing env should return a 400 response', function (done) {
+      var serviceInstance = {
+        instance_id: 'instance-guid-here',
+        payload: {
+          organization_guid: 'org-guid-here',
+          plan_id: catalogData.guid.org,
+          service_id: 'service-guid-here',
+          space_guid: 'space-guid-here',
+          parameters: {
+            org: 'invalid-org',
+          }
+        }
+      }
+      api.put('/v2/service_instances/' + serviceInstance.instance_id)
+        .send(serviceInstance.payload)
+        .set('Accept', 'application/json')
+        .set('Authorization', authHeader)
+        .expect(400, done)
+    })
   })
 
-  describe('Route Binding APIs', function () {
+  describe("Org Plan Request Validations", function(){
+    it('Valid Auth on org route binding API with invalid org parameters should return 400 - target_app_port', function (done) {
+      var bindingInstance = {
+        instance_id: 'instance-guid-here',
+        binding_id: 'binding-guid-here',
+        payload: {
+          plan_id: catalogData.guid.org,
+          service_id: 'service-guid-here',
+          parameters: {
+            host: config.default.get('APIGEE_PROXY_HOST_TEMPLATE'),
+            org: 'org-name-here',
+            env: 'env-name-here',
+            user: 'XXXXX',
+            pass: 'XXXXXXX',
+            action: 'proxy bind',
+            target_app_port: '8080',
+//            protocol: 'http'
+          }
+        }
+      }
+      api.put('/v2/service_instances/' + bindingInstance.instance_id + '/service_bindings/' + bindingInstance.binding_id)
+      .send(bindingInstance.payload)
+      .set('Accept', 'application/json')
+      .set('Authorization', authHeader)
+      .expect(400, done)
+    })
+
+    it('Valid Auth on org route binding API with invalid org parameters should return 400 - target_app_route', function (done) {
+      var bindingInstance = {
+        instance_id: 'instance-guid-here',
+        binding_id: 'binding-guid-here',
+        payload: {
+          plan_id: catalogData.guid.org,
+          service_id: 'service-guid-here',
+          parameters: {
+            host: config.default.get('APIGEE_PROXY_HOST_TEMPLATE'),
+            org: 'org-name-here',
+            env: 'env-name-here',
+            user: 'XXXXX',
+            pass: 'XXXXXXX',
+            action: 'proxy bind',
+            target_app_route: '8080',
+//            protocol: 'http'
+          }
+        }
+      }
+      api.put('/v2/service_instances/' + bindingInstance.instance_id + '/service_bindings/' + bindingInstance.binding_id)
+      .send(bindingInstance.payload)
+      .set('Accept', 'application/json')
+      .set('Authorization', authHeader)
+      .expect(400, done)
+    })
+
+    it('Valid Auth on org route binding API with invalid org parameters should return 400 - edgemicro_key', function (done) {
+      var bindingInstance = {
+        instance_id: 'instance-guid-here',
+        binding_id: 'binding-guid-here',
+        payload: {
+          plan_id: catalogData.guid.org,
+          service_id: 'service-guid-here',
+          parameters: {
+            host: config.default.get('APIGEE_PROXY_HOST_TEMPLATE'),
+            org: 'org-name-here',
+            env: 'env-name-here',
+            user: 'XXXXX',
+            pass: 'XXXXXXX',
+            action: 'proxy bind',
+            edgemicro_key: '8080',
+//            protocol: 'http'
+          }
+        }
+      }
+      api.put('/v2/service_instances/' + bindingInstance.instance_id + '/service_bindings/' + bindingInstance.binding_id)
+      .send(bindingInstance.payload)
+      .set('Accept', 'application/json')
+      .set('Authorization', authHeader)
+      .expect(400, done)
+    })
+
+    it('Valid Auth on org route binding API with invalid org parameters should return 400 - edgemicro_secret', function (done) {
+      var bindingInstance = {
+        instance_id: 'instance-guid-here',
+        binding_id: 'binding-guid-here',
+        payload: {
+          plan_id: catalogData.guid.org,
+          service_id: 'service-guid-here',
+          parameters: {
+            host: config.default.get('APIGEE_PROXY_HOST_TEMPLATE'),
+            org: 'org-name-here',
+            env: 'env-name-here',
+            user: 'XXXXX',
+            pass: 'XXXXXXX',
+            action: 'proxy bind',
+            edgemicro_secret: '8080',
+//            protocol: 'http'
+          }
+        }
+      }
+      api.put('/v2/service_instances/' + bindingInstance.instance_id + '/service_bindings/' + bindingInstance.binding_id)
+      .send(bindingInstance.payload)
+      .set('Accept', 'application/json')
+      .set('Authorization', authHeader)
+      .expect(400, done)
+    })
+
+    it('Valid Auth on org route binding API with invalid org parameters should return 400 - micro', function (done) {
+      var bindingInstance = {
+        instance_id: 'instance-guid-here',
+        binding_id: 'binding-guid-here',
+        payload: {
+          plan_id: catalogData.guid.org,
+          service_id: 'service-guid-here',
+          parameters: {
+            host: config.default.get('APIGEE_PROXY_HOST_TEMPLATE'),
+            org: 'org-name-here',
+            env: 'env-name-here',
+            user: 'XXXXX',
+            pass: 'XXXXXXX',
+            action: 'proxy bind',
+            micro: '8080',
+//            protocol: 'http'
+          }
+        }
+      }
+      api.put('/v2/service_instances/' + bindingInstance.instance_id + '/service_bindings/' + bindingInstance.binding_id)
+      .send(bindingInstance.payload)
+      .set('Accept', 'application/json')
+      .set('Authorization', authHeader)
+      .expect(400, done)
+    })
+
+  })
+
+  describe("Micro Plan Request Validations", function(){
+
+    it('Valid Auth on micro route binding API with missing micro parameter should return 400', function (done) {
+      var bindingInstance = {
+        instance_id: 'instance-guid-here',
+        binding_id: 'binding-guid-here',
+        payload: {
+          plan_id: catalogData.guid.micro,
+          service_id: 'service-guid-here',
+          bind_resource: {
+            route: 'route-url-here'
+          },
+          parameters: {
+            host: config.default.get('APIGEE_PROXY_HOST_TEMPLATE'),
+            org: 'org-name-here',
+            env: 'env-name-here',
+            user: 'XXXXX',
+            pass: 'XXXXXXX',
+            action: 'proxy bind',
+//            protocol: 'http'
+          }
+        }
+      }
+      api.put('/v2/service_instances/' + bindingInstance.instance_id + '/service_bindings/' + bindingInstance.binding_id)
+      .send(bindingInstance.payload)
+      .set('Accept', 'application/json')
+      .set('Authorization', authHeader)
+      .expect(400, done)
+    })
+
+    it('Valid Auth on micro route binding API with invalid micro parameters should return 400 - target_app_port', function (done) {
+      var bindingInstance = {
+        instance_id: 'instance-guid-here',
+        binding_id: 'binding-guid-here',
+        payload: {
+          plan_id: catalogData.guid.micro,
+          service_id: 'service-guid-here',
+          parameters: {
+            host: config.default.get('APIGEE_PROXY_HOST_TEMPLATE'),
+            org: 'org-name-here',
+            env: 'env-name-here',
+            user: 'XXXXX',
+            pass: 'XXXXXXX',
+            action: 'proxy bind',
+            target_app_port: '8080',
+//            protocol: 'http'
+          }
+        }
+      }
+      api.put('/v2/service_instances/' + bindingInstance.instance_id + '/service_bindings/' + bindingInstance.binding_id)
+      .send(bindingInstance.payload)
+      .set('Accept', 'application/json')
+      .set('Authorization', authHeader)
+      .expect(400, done)
+    })
+
+    it('Valid Auth on micro route binding API with invalid parameters should return 400 - target_app_route', function (done) {
+      var bindingInstance = {
+        instance_id: 'instance-guid-here',
+        binding_id: 'binding-guid-here',
+        payload: {
+          plan_id: catalogData.guid.micro,
+          service_id: 'service-guid-here',
+          parameters: {
+            host: config.default.get('APIGEE_PROXY_HOST_TEMPLATE'),
+            org: 'org-name-here',
+            env: 'env-name-here',
+            user: 'XXXXX',
+            pass: 'XXXXXXX',
+            action: 'proxy bind',
+            target_app_route: '8080',
+//            protocol: 'http'
+          }
+        }
+      }
+      api.put('/v2/service_instances/' + bindingInstance.instance_id + '/service_bindings/' + bindingInstance.binding_id)
+      .send(bindingInstance.payload)
+      .set('Accept', 'application/json')
+      .set('Authorization', authHeader)
+      .expect(400, done)
+    })
+
+    it('Valid Auth on micro route binding API with invalid micro parameters should return 400 - edgemicro_key', function (done) {
+      var bindingInstance = {
+        instance_id: 'instance-guid-here',
+        binding_id: 'binding-guid-here',
+        payload: {
+          plan_id: catalogData.guid.micro,
+          service_id: 'service-guid-here',
+          parameters: {
+            host: config.default.get('APIGEE_PROXY_HOST_TEMPLATE'),
+            org: 'org-name-here',
+            env: 'env-name-here',
+            user: 'XXXXX',
+            pass: 'XXXXXXX',
+            action: 'proxy bind',
+            edgemicro_key: '8080',
+//            protocol: 'http'
+          }
+        }
+      }
+      api.put('/v2/service_instances/' + bindingInstance.instance_id + '/service_bindings/' + bindingInstance.binding_id)
+      .send(bindingInstance.payload)
+      .set('Accept', 'application/json')
+      .set('Authorization', authHeader)
+      .expect(400, done)
+    })
+
+    it('Valid Auth on micro route binding API with invalid micro parameters should return 400 - edgemicro_secret', function (done) {
+      var bindingInstance = {
+        instance_id: 'instance-guid-here',
+        binding_id: 'binding-guid-here',
+        payload: {
+          plan_id: catalogData.guid.micro,
+          service_id: 'service-guid-here',
+          parameters: {
+            host: config.default.get('APIGEE_PROXY_HOST_TEMPLATE'),
+            org: 'org-name-here',
+            env: 'env-name-here',
+            user: 'XXXXX',
+            pass: 'XXXXXXX',
+            action: 'proxy bind',
+            edgemicro_secret: '8080',
+//            protocol: 'http'
+          }
+        }
+      }
+      api.put('/v2/service_instances/' + bindingInstance.instance_id + '/service_bindings/' + bindingInstance.binding_id)
+      .send(bindingInstance.payload)
+      .set('Accept', 'application/json')
+      .set('Authorization', authHeader)
+      .expect(400, done)
+    })
+    
+  })
+
+  describe("Micro coresident Plan Request Validations", function(){
+
+    it('Valid Auth on coresident app binding API with missing "target_app_route" parameter should return 400', function (done) {
+      var bindingInstance = {
+        instance_id: 'instance-guid-here',
+        binding_id: 'binding-guid-here',
+        payload: {
+          plan_id: catalogData.guid.micro_coresident,
+          service_id: 'service-guid-here',
+          parameters: {
+            host: config.default.get('APIGEE_PROXY_HOST_TEMPLATE'),
+            org: 'org-name-here',
+            env: 'env-name-here',
+            user: 'XXXXX',
+            pass: 'XXXXXXX',
+            action: 'proxy bind',
+            target_app_port: '8080',
+            edgemicro_key: 'key',
+            edgemicro_secret: 'secret'
+//            protocol: 'http'
+          }
+        }
+      }
+      api.put('/v2/service_instances/' + bindingInstance.instance_id + '/service_bindings/' + bindingInstance.binding_id)
+      .send(bindingInstance.payload)
+      .set('Accept', 'application/json')
+      .set('Authorization', authHeader)
+      .expect(400, done)
+    })
+
+    it('Valid Auth on coresident app binding API with missing "target_app_port" parameter should return 400', function (done) {
+      var bindingInstance = {
+        instance_id: 'instance-guid-here',
+        binding_id: 'binding-guid-here',
+        payload: {
+          plan_id: catalogData.guid.micro_coresident,
+          service_id: 'service-guid-here',
+          parameters: {
+            host: config.default.get('APIGEE_PROXY_HOST_TEMPLATE'),
+            org: 'org-name-here',
+            env: 'env-name-here',
+            user: 'XXXXX',
+            pass: 'XXXXXXX',
+            action: 'proxy bind',
+            target_app_route: 'route-url-here',
+            edgemicro_key: 'key',
+            edgemicro_secret: 'secret'
+//            protocol: 'http'
+          }
+        }
+      }
+      api.put('/v2/service_instances/' + bindingInstance.instance_id + '/service_bindings/' + bindingInstance.binding_id)
+      .send(bindingInstance.payload)
+      .set('Accept', 'application/json')
+      .set('Authorization', authHeader)
+      .expect(400, done)
+    })
+
+    it('Valid Auth on coresident app binding API with missing "edgemicro_key" parameter should return 400', function (done) {
+      var bindingInstance = {
+        instance_id: 'instance-guid-here',
+        binding_id: 'binding-guid-here',
+        payload: {
+          plan_id: catalogData.guid.micro_coresident,
+          service_id: 'service-guid-here',
+          parameters: {
+            host: config.default.get('APIGEE_PROXY_HOST_TEMPLATE'),
+            org: 'org-name-here',
+            env: 'env-name-here',
+            user: 'XXXXX',
+            pass: 'XXXXXXX',
+            action: 'proxy bind',
+            target_app_port: '8080',
+            target_app_route: 'route-url-here',
+            edgemicro_secret: 'secret'
+//            protocol: 'http'
+          }
+        }
+      }
+      api.put('/v2/service_instances/' + bindingInstance.instance_id + '/service_bindings/' + bindingInstance.binding_id)
+      .send(bindingInstance.payload)
+      .set('Accept', 'application/json')
+      .set('Authorization', authHeader)
+      .expect(400, done)
+    })
+
+    it('Valid Auth on coresident app binding API with missing "edgemicro_secret" parameter should return 400', function (done) {
+      var bindingInstance = {
+        instance_id: 'instance-guid-here',
+        binding_id: 'binding-guid-here',
+        payload: {
+          plan_id: catalogData.guid.micro_coresident,
+          service_id: 'service-guid-here',
+          parameters: {
+            host: config.default.get('APIGEE_PROXY_HOST_TEMPLATE'),
+            org: 'org-name-here',
+            env: 'env-name-here',
+            user: 'XXXXX',
+            pass: 'XXXXXXX',
+            action: 'proxy bind',
+            target_app_port: '8080',
+            edgemicro_key: 'key',
+            target_app_route: 'route-url-here'
+//            protocol: 'http'
+          }
+        }
+      }
+      api.put('/v2/service_instances/' + bindingInstance.instance_id + '/service_bindings/' + bindingInstance.binding_id)
+      .send(bindingInstance.payload)
+      .set('Accept', 'application/json')
+      .set('Authorization', authHeader)
+      .expect(400, done)
+    })
+
+    it('Valid Auth on coresident app binding API with invalid microgateway-coresident parameter "micro" should return 400', function (done) {
+      var bindingInstance = {
+        instance_id: 'instance-guid-here',
+        binding_id: 'binding-guid-here',
+        payload: {
+          plan_id: catalogData.guid.micro_coresident,
+          service_id: 'service-guid-here',
+          parameters: {
+            host: config.default.get('APIGEE_PROXY_HOST_TEMPLATE'),
+            org: 'org-name-here',
+            env: 'env-name-here',
+            user: 'XXXXX',
+            pass: 'XXXXXXX',
+            action: 'proxy bind',
+            target_app_port: '8080',
+            edgemicro_key: 'key',
+            target_app_route: 'route-url-here',
+            edgemicro_secret: 'secret',
+            micro: "micro route"
+//            protocol: 'http'
+          }
+        }
+      }
+      api.put('/v2/service_instances/' + bindingInstance.instance_id + '/service_bindings/' + bindingInstance.binding_id)
+      .send(bindingInstance.payload)
+      .set('Accept', 'application/json')
+      .set('Authorization', authHeader)
+      .expect(400, done)
+    })
+
+    it('Binding with "bind-route-service" (route in bind_resource) instead of "bind-service" should return 400 with micro coresident plan', function (done) {
+      var bindingInstance = {
+        instance_id: 'instance-guid-here',
+        binding_id: 'binding-guid-here',
+        payload: {
+          plan_id: catalogData.guid.micro_coresident,
+          service_id: 'service-guid-here',
+          bind_resource: {
+            route: 'route-url-here'
+          },
+          parameters: {
+            host: config.default.get('APIGEE_PROXY_HOST_TEMPLATE'),
+            org: 'cdmo',
+            env: 'test',
+            user: 'XXXXX',
+            pass: 'XXXXXXX',
+            action: 'proxy bind',
+            target_app_port: '8081',
+            target_app_route: 'route-url-here',
+            edgemicro_key: 'key',
+            edgemicro_secret: 'secret'
+//            protocol: 'http'
+          }
+        }
+      }
+      api.put('/v2/service_instances/' + bindingInstance.instance_id + '/service_bindings/' + bindingInstance.binding_id)
+        .send(bindingInstance.payload)
+        .set('Accept', 'application/json')
+        .set('Authorization', authHeader)
+        .expect(400, done)
+    })
+  })
+
+  describe("Non Plan Based Request Content Validation", function(){
+    
+    it('Invalid JSON req payload should return Json Schema Validation error', function (done) {
+      api.put('/v2/service_instances/12345/service_bindings/67890')
+        .set('Accept', 'application/json')
+        .set('Authorization', authHeader)
+        .send("{'invalidJSON")
+        .expect(400)
+        .end(function (err, res) {
+          expect(err).equal(null)
+          expect(res.body).to.have.property('jsonSchemaValidation')
+          expect(res.body.jsonSchemaValidation).to.equal(true)
+          done()
+        })
+    })
+
+    it('Invalid Protocol on route binding API should return a 400', function(done) {
+      var bindingInstance = {
+              instance_id: 'instance-guid-here',
+              binding_id: 'binding-guid-here',
+              payload: {
+                plan_id: catalogData.guid.org,
+                service_id: 'service-guid-here',
+                bind_resource: {
+                  route: 'route-url-here'
+                },
+                parameters: {
+                  host: config.default.get('APIGEE_PROXY_HOST_TEMPLATE'),
+                  org: 'cdmo',
+                  env: 'test',
+                  user: 'XXXXX',
+                  pass: 'XXXXXXX',
+                  action: 'proxy bind',
+                  protocol: 'htYp'
+                }
+              }
+            }
+            api.put('/v2/service_instances/' + bindingInstance.instance_id + '/service_bindings/' + bindingInstance.binding_id)
+              .send(bindingInstance.payload)
+              .set('Accept', 'application/json')
+              .set('Authorization', authHeader)
+              .expect(400, done)
+    })
+
+    it('Valid Auth on route binding API with incorrect org/env mapping should return 400', function (done) {
+      var bindingInstance = {
+        instance_id: 'instance-guid-here',
+        binding_id: 'binding-guid-here',
+        payload: {
+          plan_id: catalogData.guid.org,
+          service_id: 'service-guid-here',
+          bind_resource: {
+            route: 'route-url-here'
+          },
+          parameters: {
+            host: config.default.get('APIGEE_PROXY_HOST_TEMPLATE'),
+            org: 'invalid-org',
+            env: 'test',
+            user: 'XXXXX',
+            pass: 'XXXXXXX',
+            action: 'proxy bind',
+//            protocol: 'http'
+          }
+        }
+      }
+      api.put('/v2/service_instances/' + bindingInstance.instance_id + '/service_bindings/' + bindingInstance.binding_id)
+      .send(bindingInstance.payload)
+      .set('Accept', 'application/json')
+      .set('Authorization', authHeader)
+      .expect(400, done)
+    })
+
     it('Invalid Auth should return 401', function (done) {
       api.put('/v2/service_instances/:instance_id/service_bindings/:binding_id')
         .set('Accept', 'application/json')
         .expect(401, done)
     })
+  })
+
+  describe('Route Binding APIs', function () {
     it('Invalid Apigee Credentials should return a 407 response - http', function (done) {
       var bindingInstance = {
         instance_id: 'instance-guid-here',
@@ -147,7 +751,7 @@ describe('Component APIs', function () {
           service_id: 'service-guid-here',
           space_guid: 'space-guid-here',
           parameters: {
-            host: config.get('APIGEE_PROXY_HOST_TEMPLATE'),
+            host: config.default.get('APIGEE_PROXY_HOST_TEMPLATE'),
             org: 'org-name-here',
             env: 'env-name-here',
             user: 'apigee-user-here',
@@ -164,21 +768,7 @@ describe('Component APIs', function () {
         .expect(407, done)
     })
 
-    it('Invalid JSON req payload should return Json Schema Validation error', function (done) {
-      api.put('/v2/service_instances/12345/service_bindings/67890')
-        .set('Accept', 'application/json')
-        .set('Authorization', authHeader)
-        .send("{'invalidJSON")
-        .expect(400)
-        .end(function (err, res) {
-          expect(err).equal(null)
-          expect(res.body).to.have.property('jsonSchemaValidation')
-          expect(res.body.jsonSchemaValidation).to.equal(true)
-          done()
-        })
-    })
-
-    it('Valid Auth on route binding API should return 201 with route_service_url - defaults to https', function (done) {
+    it('Valid Auth on route binding API should return 201 with route_service_url - org plan', function (done) {
       var bindingInstance = {
         instance_id: 'instance-guid-here',
         binding_id: 'binding-guid-here',
@@ -189,7 +779,7 @@ describe('Component APIs', function () {
             route: 'route-url-here'
           },
           parameters: {
-            host: config.get('APIGEE_PROXY_HOST_TEMPLATE'),
+            host: config.default.get('APIGEE_PROXY_HOST_TEMPLATE'),
             org: 'cdmo',
             env: 'test',
             user: 'XXXXX',
@@ -211,32 +801,77 @@ describe('Component APIs', function () {
           done()
         })
     })
-    it('Invalid Protocol on route binding API should return a 400', function(done) {
+
+    it('Valid Auth on route binding API should return 201 with route_service_url - micro plan', function (done) {
       var bindingInstance = {
-              instance_id: 'instance-guid-here',
-              binding_id: 'binding-guid-here',
-              payload: {
-                plan_id: catalogData.guid.org,
-                service_id: 'service-guid-here',
-                bind_resource: {
-                  route: 'route-url-here'
-                },
-                parameters: {
-                  host: config.get('APIGEE_PROXY_HOST_TEMPLATE'),
-                  org: 'cdmo',
-                  env: 'test',
-                  user: 'XXXXX',
-                  pass: 'XXXXXXX',
-                  action: 'proxy bind',
-                  protocol: 'htYp'
-                }
-              }
-            }
-            api.put('/v2/service_instances/' + bindingInstance.instance_id + '/service_bindings/' + bindingInstance.binding_id)
-              .send(bindingInstance.payload)
-              .set('Accept', 'application/json')
-              .set('Authorization', authHeader)
-              .expect(400, done)
+        instance_id: 'instance-guid-here',
+        binding_id: 'binding-guid-here',
+        payload: {
+          plan_id: catalogData.guid.micro,
+          service_id: 'service-guid-here',
+          bind_resource: {
+            route: 'route-url-here'
+          },
+          parameters: {
+            host: config.default.get('APIGEE_PROXY_HOST_TEMPLATE'),
+            org: 'cdmo',
+            env: 'test',
+            user: 'XXXXX',
+            pass: 'XXXXXXX',
+            action: 'proxy bind',
+            micro: 'edgemicro-cf-app-url'
+//            protocol: 'http'
+          }
+        }
+      }
+      api.put('/v2/service_instances/' + bindingInstance.instance_id + '/service_bindings/' + bindingInstance.binding_id)
+        .send(bindingInstance.payload)
+        .set('Accept', 'application/json')
+        .set('Authorization', authHeader)
+        .expect(201)
+        .end(function (err, res) {
+          expect(err).equal(null)
+          expect(res.body).to.have.property('route_service_url')
+          expect(res.body.route_service_url).to.equal('https://edgemicro-cf-app-url/route-url-here')
+          done()
+        })
+    })
+
+    it('Valid Auth on route binding API should return 201 with route_service_url - micro coresident', function (done) {
+      var bindingInstance = {
+        instance_id: 'instance-guid-here',
+        binding_id: 'binding-guid-here',
+        payload: {
+          plan_id: catalogData.guid.micro_coresident,
+          service_id: 'service-guid-here',
+          bind_resource: {},
+          parameters: {
+            host: config.default.get('APIGEE_PROXY_HOST_TEMPLATE'),
+            org: 'cdmo',
+            env: 'test',
+            user: 'XXXXX',
+            pass: 'XXXXXXX',
+            action: 'proxy bind',
+            target_app_port: '8081',
+            target_app_route: 'route-url-here',
+            edgemicro_key: 'key',
+            edgemicro_secret: 'secret'
+//            protocol: 'http'
+          }
+        }
+      }
+      api.put('/v2/service_instances/' + bindingInstance.instance_id + '/service_bindings/' + bindingInstance.binding_id)
+        .send(bindingInstance.payload)
+        .set('Accept', 'application/json')
+        .set('Authorization', authHeader)
+        .expect(201)
+        .end(function (err, res) {
+          expect(err).equal(null)
+          expect(res.body).to.have.property('credentials')
+          expect(res.body.credentials.edgemicro_key).to.equal('key')
+          expect(res.body.credentials.edgemicro_secret).to.equal('secret')
+          done()
+        })
     })
   })
 
@@ -273,5 +908,19 @@ describe('Component APIs', function () {
     this.timeout(0)
     app.close()
     done()
+  })
+})
+
+// console.log(config.default.get('APIGEE_DASHBOARD_URL'))
+// console.log(config.getApigeeConfiguration("org1","tests", function(err, data){return "hi"}))
+describe('Get Apigee Config', function () {
+  var org = 'test-org'
+  var env = 'test'
+  it("Config Module Should Return Expected Values", function(){
+      chai.assert.equal(config.getApigeeConfiguration(org, env, function(err, data){if(err){console.log(err)} else{return data.get('APIGEE_DASHBOARD_URL')}}),'https://onprem.com/platform/#/')
+      chai.assert.equal(config.getApigeeConfiguration(org, env, function(err, data){if(err){console.log(err)} else{return data.get('APIGEE_MGMT_API_URL')}}),'https://onprem.com/v1')
+      chai.assert.equal(config.getApigeeConfiguration(org, env, function(err, data){if(err){console.log(err)} else{return data.get('APIGEE_PROXY_DOMAIN')}}),'onprem.net')
+      chai.assert.equal(config.getApigeeConfiguration(org, env, function(err, data){if(err){console.log(err)} else{return data.get('APIGEE_PROXY_HOST_TEMPLATE')}}),'${org}-${env}.${domain}')
+      chai.assert.equal(config.getApigeeConfiguration(org, env, function(err, data){if(err){console.log(err)} else{return data.get('APIGEE_PROXY_NAME_TEMPLATE')}}),'cf-${route}')
   })
 })

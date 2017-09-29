@@ -52,6 +52,15 @@ var codes = {
   ERR_MISSING_AUTH: 'E0086',
   ERR_APIGEE_AUTH_BEARER_FAILED: 'E0087',
   ERR_INVALID_TARGET_PROTOCOL: 'E0088',
+  ERR_MISSING_ORG: 'E0089',
+  ERR_MISSING_ENV: 'E0090',
+  ERR_MISSING_ENV_ORG: 'E0091',
+  ERR_ORG_ENV_NOT_FOUND: 'E0092',
+  ERR_NO_CONFIGURATION: 'E0093',
+  ERR_CONFIG_PARSE: 'E0094',
+  ERR_MISSING_MICRO_CORES_PARAMETER: 'E0095',
+  ERR_NOT_MICRO_CORES_PLAN: 'E0096',
+  ERR_BAD_BIND_COMMAND: 'E0097',
   INFO_PROXY_CREATED_STOP: 'I0001'
 }
 
@@ -75,7 +84,7 @@ var messages = {
   E0060: 'Error getting OpenAPI interface file',
   E0061: 'Unable to find policies in Open API spec',
   E0062: 'Invalid Open API Spec, Check policy attachment',
-  E0080: 'Not a Microgateway plan: "micro" parameter invalid',
+  E0080: 'Not a "microgateway" plan, "micro" parameter is invalid',
   E0081: 'Missing at least one supported "action"',
   E0082: 'Unsupported "action"(s)',
   E0083: 'Unrecognized Service Plan',
@@ -84,6 +93,15 @@ var messages = {
   E0086: 'Missing authorization ("bearer" or "basic" or "user"&"pass")',
   E0087: 'Error Authenticating to Apigee. Try refreshing Bearer token',
   E0088: 'Invalid target web "protocol"',
+  E0089: 'Missing or empty "org" parameter',
+  E0090: 'Missing or empty "env" parameter',
+  E0091: 'Missing or empty "org" and "env" parameters',
+  E0092: 'Inorrect "org" and "env" mapping',
+  E0093: 'No configuration was found in your service broker environment. Please contact your Cloud Foundry administrator for more assistance',
+  E0094: 'Error parsing "APIGEE_CONFIGURATIONS"',
+  E0095: '"microgateway-coresident" plan requires the following parameter',
+  E0096: 'Not a microgateway-coresident plan',
+  E0097: 'Looks like a "bind-route-service" was run instead of "bind-service". Please use "bind-service" with the "microgateway-coresident" plan instead',
   I0001: 'Proxy created; as requested, no binding attempted'
 }
 
@@ -98,7 +116,7 @@ function LoggerError(code, statusCode, detailMessage) {
     this.code = code
     this.description = getMessage(code)  // 'description' expected in CF response
     if (detailMessage) {
-      this.description += ': ' + detailMessage;
+      this.description += ': ' + detailMessage
     }
     this.statusCode = statusCode || 500
 }

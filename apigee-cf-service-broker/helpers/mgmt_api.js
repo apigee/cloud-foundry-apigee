@@ -29,7 +29,6 @@
  */
 
 var request = require('request')
-var config = require('./config')
 var logger = require('./logger')
 
 /* Destructure, spread operator: Node 6
@@ -71,14 +70,14 @@ function auth(options, obj) {
 
 function mgmtUrl() {
   const args = Array.prototype.slice.call(arguments)
-  const vX = config.get('APIGEE_MGMT_API_URL')
-  return [vX].concat(args).join('/')
+  const obj = args.shift()
+  return [obj.configuration.get('APIGEE_MGMT_API_URL')].concat(args).join('/')
 }
 
 function org() {
   const args = Array.prototype.slice.call(arguments)
   const obj = args.shift()
-  return mgmtUrl.apply(null, ['organizations', obj.org].concat(args))
+  return mgmtUrl.apply(null, [obj, 'organizations', obj.org].concat(args))
 }
 
 function orgEnv() {

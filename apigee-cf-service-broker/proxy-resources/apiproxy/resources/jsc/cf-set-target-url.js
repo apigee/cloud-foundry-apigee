@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /* retrieve variable saved from cf-header and assign target.url */
 var cfurl = context.getVariable('cf-url')
 context.setVariable('target.url', cfurl)

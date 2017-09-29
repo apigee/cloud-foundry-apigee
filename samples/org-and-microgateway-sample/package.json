@@ -1,0 +1,20 @@
+{
+  "name": "myapi",
+  "version": "1.0.0",
+  "description": "My CF Node App - APIs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js --use_strict"
+  },
+  "keywords": [
+    "cf",
+    "node",
+    "app"
+  ],
+  "author": "Anil Sagar <anil614sagar@gmail.com> (https://in.linkedin.com/in/anilsagar/)",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "body-parser": "^1.15.0",
+    "express": "^4.13.3"
+  }
+}

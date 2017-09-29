@@ -24,6 +24,7 @@ var config = require('../helpers/config')
 
 const ORG_GUID = 'A98CCB00-549B-458F-A627-D54C5E860519';
 const MICRO_GUID = 'D4D617E1-B4F9-49C7-91C8-52AB9DE8C18F';
+const MICRO_CORESIDENT_GUID = 'BF677Y2P-H01Y-99SZ-0YU8-FG7A04B5CVW3';
 
 // service catalog - TODO: this should be configurable
 function getServiceCatalog () {
@@ -57,9 +58,18 @@ function getServiceCatalog () {
         {
           id: MICRO_GUID,
           name: 'microgateway',
-          description: 'Apigee Edge microgateway for Route Services',
+          description: 'Apigee Edge Microgateway for Route Services. This plan requires launching Microgateway as a separate Cloud Foundry application',
           metadata: {
-            displayName: 'Apigee Edge microgateway for Route Services'
+            displayName: 'Apigee Edge Microgateway for Route Services as its own Cloud Foundry application'
+          },
+          free: true
+        },
+        {
+          id: MICRO_CORESIDENT_GUID,
+          name: 'microgateway-coresident',
+          description: 'Apigee Edge Microgateway coresident plan. Coresident means Microgateway will be on the same container as the target application',
+          metadata: {
+            displayName: 'Apigee Edge Microgateway coresident plan for running Microgateway on the same container as the target application'
           },
           free: true
         }
@@ -76,7 +86,8 @@ function getServiceCatalog () {
 module.exports = {
   guid: Object.freeze({
     org: ORG_GUID,
-    micro: MICRO_GUID
+    micro: MICRO_GUID,
+    micro_coresident: MICRO_CORESIDENT_GUID
   }),
   getServiceCatalog: getServiceCatalog
 }

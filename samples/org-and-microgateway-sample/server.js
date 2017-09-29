@@ -55,7 +55,7 @@ app.delete('/hello/user', function(req, res) {
     res.send('Hello ' + name + '. We just deleted your info.');
 });
 
-var port = 8080
+var port = process.env.PORT || 3000
 
 var webServer = app.listen(port, function () {
     console.log('Listening on port %d', webServer.address().port)
