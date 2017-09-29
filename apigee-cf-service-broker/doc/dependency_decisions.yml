@@ -1,0 +1,13 @@
+---
+- - :approve
+  - ISC
+  - :who: Jeff West
+    :why: Same as BSD
+    :versions: []
+    :when: 2016-04-01 23:00:36.619230000 Z
+- - :approve
+  - MIT
+  - :who: Jeff West
+    :why: It is MIT
+    :versions: []
+    :when: 2016-04-01 23:00:59.404054000 Z

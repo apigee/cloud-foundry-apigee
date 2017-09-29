@@ -1,0 +1,59 @@
+{
+  "name": "apigee-cf-service-broker",
+  "version": "2.0.0",
+  "description": "apigee service broker for cloud foundry",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "NODE_ENV=TEST istanbul cover --report cobertura --report html _mocha -- --recursive test -R spec",
+    "posttest": "node scripts/genCoverageBadge.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/apigee/pivotal-cf-apigee.git"
+  },
+  "author": "apigee <@apigee>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/apigee/pivotal-cf-apigee/issues"
+  },
+  "homepage": "https://github.com/apigee/pivotal-cf-apigee#readme",
+  "dependencies": {
+    "async": "^1.5.0",
+    "basic-auth": "^1.0.3",
+    "body-parser": "1.12.4",
+    "bunyan": "^1.5.1",
+    "cfenv": "^1.0.3",
+    "es6-template-strings": "^2.0.0",
+    "express": "^4.13.3",
+    "express-jsonschema": "^1.1.0",
+    "js-yaml": "^3.5.3",
+    "jszip": "^2.5.0",
+    "nconf": "^0.8.2",
+    "request": "^2.67.0",
+    "swagger-parser": "^3.4.0",
+    "xmlbuilder": "^4.2.1",
+    "xmldom": "^0.1.22"
+  },
+  "devDependencies": {
+    "chai": "^3.4.1",
+    "chai-things": "^0.2.0",
+    "istanbul": "^0.4.4",
+    "istanbul-cobertura-badger": "^1.2.1",
+    "mocha": "^2.4.5",
+    "nock": "^7.0.2",
+    "should": "^8.2.1",
+    "standard": "^5.4.1",
+    "supertest": "^1.1.0"
+  },
+  "standard": {
+    "ignore": [
+      "proxy-resources/apiproxy/resources/jsc/cf-get-target-url.js",
+      "proxy-resources/apiproxy/resources/jsc/cf-set-target-url.js"
+    ],
+    "globals": [
+      "describe",
+      "it"
+    ]
+  }
+}

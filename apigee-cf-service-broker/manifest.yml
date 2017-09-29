@@ -1,0 +1,8 @@
+---
+applications:
+- name: apigee-cf-service-broker
+command: node server.js
+buildpack: nodejs_buildpack
+env:
+  APIGEE_DASHBOARD_URL: https://enterprise.apigee.com/platform/#/
+  APIGEE_MGMT_API_URL: https://api.enterprise.apigee.com/v1

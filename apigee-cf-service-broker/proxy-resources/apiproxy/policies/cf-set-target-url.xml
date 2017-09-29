@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Javascript async="false" continueOnError="false" enabled="true" timeLimit="200" name="cf-set-target-url">
+    <DisplayName>cf-set-target-url</DisplayName>
+    <Properties/>
+    <ResourceURL>jsc://cf-set-target-url.js</ResourceURL>
+</Javascript>
