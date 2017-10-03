@@ -4,7 +4,7 @@ These instructions install a sample app that is accessible via the "org" and "mi
 
 These instructions assume the Service Broker is already installed. You can check this by running `cf marketplace` and checking to make sure that `apigee-edge` is an offering.
 
-This sample assumes a local environment
+Throughout these instructions you will see `org = myorg` and `env = test` as well as a domain of `local.pcfdev.io`. Be sure to change these values as necessary to match your configurations.
 
 ## Org Plan:
 
@@ -196,26 +196,27 @@ Each bind attempt requires authorization with Edge, passed as additional paramet
 ### Step 5 - Test the Bind:
 
   1. In a separate terminal instance run:
-    ```bash
-    $ cf logs edgemicro-app
-    ```
+      ```bash
+      $ cf logs edgemicro-app
+      ```
   1. Using cURL, send a request to the app you just pushed.
-    * If you turned off authorization in the microgateway file. e.g:
-      ```
-      ...
-      oauth:
-      allowNoAuthorization: true
-      allowInvalidAuthorization: true
-      verify_api_key_url: 'https://myorg-myenv.apigee.net/edgemicro-auth/verifyApiKey'
-      ...
-      ```
-      Run:
-        ```
+    1. If you turned off authorization in the microgateway file. e.g:
+       ```yaml
+       ...
+       oauth:
+       allowNoAuthorization: true
+       allowInvalidAuthorization: true
+       verify_api_key_url: 'https://myorg-myenv.apigee.net/edgemicro-auth/verifyApiKey'
+       ...
+       ```
+       
+   + Then Run:
+       ```bash
         $ curl sample.local.pcfdev.io
         ```
 
-    * If you did not turn off authorization in the microgateway file. e.g:
-        ```
+  4. If you did not turn off authorization in the microgateway file. e.g:
+       ```
         ...
         oauth:
         allowNoAuthorization: false
@@ -223,14 +224,16 @@ Each bind attempt requires authorization with Edge, passed as additional paramet
         verify_api_key_url: 'https://myorg-myenv.apigee.net/edgemicro-auth/verifyApiKey'
         ...
         ```
-        Run:
-        ```
-         $ edgemicro token get -o <org> -e <env> -i <product key> -s <product secret>
-         $ curl sample.local.pcfdev.io -H "Authorization: Bearer <token from previous step>"
-        ```
+  + Run:
+      ```
+      $ edgemicro token get -o <org> -e <env> -i <product key> -s <product secret>
+      $ curl sample.local.pcfdev.io -H "Authorization: Bearer <token from previous step>"
+      ```
 
-    The console will display the app's response.
-    ```bash
-    {"hello":"hello from cf app"}
-    ```
-  1. Note that a request came into the `edgemicro-app` container.
+  5. The console will display the app's response.
+  ```bash
+  {"hello":"hello from cf app"}
+  ```
+  6. Note that a request came into the `edgemicro-app` container.
+        
+        

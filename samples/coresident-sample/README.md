@@ -4,6 +4,8 @@ These instructions install a sample app that is accessible via the "microgateway
 
 These instructions assume the Service Broker is already installed. You can check this by running `cf marketplace` and checking to make sure that `apigee-edge` is an offering.
 
+Throughout these instructions you will see `org = myorg` and `env = test` as well as a domain of `local.pcfdev.io`. Be sure to change these values as necessary to match your configurations.
+
 ## Step 1 - Create the Service:
   ```
   $ cf create-service apigee-edge microgateway-coresident coresident -c \
@@ -33,52 +35,71 @@ These instructions assume the Service Broker is already installed. You can check
 * Locate and make any desired changes to the configuration YAML file created in your Apigee Edge Microgateway installation, typically in the .edgemicro directory.
 * Copy the configuration file to the following directory in your Cloud Foundry app:  
 ```
+$ mkdir .../cloud-foundry-apigee/samples/coresident-sample/config
 $ cp ~/.edgemicro/myorg-test-config.yaml .../cloud-foundry-apigee/samples/coresident-sample/config
 ```
-* If you want to use the provided custom plugin:
-  * Configure the microgateway yaml file from step 2 to include the "response-override" plugin:
-  ```
-  ...
-  plugins:
-      dir: ../plugins
-      sequence:
-        - oauth
-        - response-override
-  ...
-  ```
+* If you want to use the provided custom plugin with ouath, you can follow one of two steps:
+  1. Edit the application manifest to include the `APIGEE_MICROGATEWAY_CUSTOM` environment variable:
+      ```yaml
+      env:
+        ...
+        APIGEE_MICROGATEWAY_PLUGINS: plugins
+        APIGEE_MICROGATEWAY_CUSTOM: |
+                                    {"policies":
+                                      {
+                                      "oauth":
+                                        {
+                                          "allowNoAuthorization": false, 
+                                          "allowInvalidAuthorization": false,
+                                          "verify_api_key_url": "https://myorg-test.apigee.net/edgemicro-auth/verifyApiKey"
+                                        }
+                                      },
+                                    "sequence": ["oauth", "response-override"]
+                                    }
+      ``` 
+  1. Configure the microgateway yaml file from step 2 to include the "response-override" plugin:
+      ```yaml
+      ...
+      plugins:
+          dir: ../plugins
+          sequence:
+            - oauth
+            - response-override
+      ...
+      ```
 
 * Edit the application manifest as follows:
   * Edit the following env values so that they correspond to your Apigee Edge Microgateway configuration:
-    * If you are not using the "response-override" plugin:
-    ```
+    * If you are **not** using the "response-override" plugin:
+    ```yaml
     env:
-        EDGEMICRO_CONFIG_DIR: /app/config
-        EDGEMICRO_ENV: test
-        EDGEMICRO_ORG: org
-        #  EDGEMICRO_CUST_PLUGINS: plugins
+        APIGEE_MICROGATEWAY_DIR: /app/config
+        APIGEE_MICROGATEWAY_ENV: test
+        APIGEE_MICROGATEWAY_ORG: org
+        #  APIGEE_MICROGATEWAY_PLUGINS: plugins
     ```
     * If you are using the "response-override" plugin:
-    ```
+    ```yaml
     env:
-        EDGEMICRO_CONFIG_DIR: /app/config
-        EDGEMICRO_ENV: test
-        EDGEMICRO_ORG: org
-        EDGEMICRO_CUST_PLUGINS: plugins
+        APIGEE_MICROGATEWAY_CONFIG_DIR: /app/config
+        APIGEE_MICROGATEWAY_ENV: test
+        APIGEE_MICROGATEWAY_ORG: org
+        APIGEE_MICROGATEWAY_CUST_PLUGINS: plugins
     ```
 
 ## Step 3 Bind the App:
   * Push the app:
-  ```
+  ```bash
   $ cf push --no-start
   ```
   * Look at the app url:
-  ```
+  ```bash
   $ cf apps
   ```
   And note the url under the `urls` section
 
   * Bind the app:
-  ```
+  ```bash
   $ cf bind-service sample coresident \
    -c '{"org":"myorg","env":"test",
     "user":"<apigee username>", "pass":"<apigee password>",
@@ -88,7 +109,7 @@ $ cp ~/.edgemicro/myorg-test-config.yaml .../cloud-foundry-apigee/samples/coresi
      "target_app_port":"8081"}'
   ```
   or if you have the [Apigee SSO Cli](http://docs.apigee.com/api-services/content/using-oauth2-security-apigee-edge-management-api#howtogetoauth2tokens):
-  ```
+  ```bash
   $ get_token && cf bind-service sample coresident \
    -c '{"org":"myorg","env":"test",
     "bearer":"'$(cat ~/.sso-cli/valid_token.dat)'", "action":"proxy bind",
@@ -97,14 +118,14 @@ $ cp ~/.edgemicro/myorg-test-config.yaml .../cloud-foundry-apigee/samples/coresi
      "target_app_port":"8081"}'
   ```
   * Start the app:
-  ```
+  ```bash
   cf start sample
   ```
   * Log into Edge and note that the proxy has been created. Then follow the instructions [here](http://docs.apigee.com/microgateway/latest/setting-and-configuring-edge-microgateway#Part2) to create a product with your newly created proxy. You can now configure standard Apigee Edge policies on that proxy.
 
 ## Step 4 Test the App:
 
-  * If you turned off authorization in the microgateway file. e.g:
+  * If you turned off authorization. e.g:
     ```
     ...
     oauth:
@@ -126,7 +147,7 @@ $ cp ~/.edgemicro/myorg-test-config.yaml .../cloud-foundry-apigee/samples/coresi
       Hello, World!
       ```
 
-  * If you did **not** turn off authorization in the microgateway file. e.g:
+  * If you did **not** turn off authorization. e.g:
     ```
     ...
     oauth:
@@ -135,7 +156,7 @@ $ cp ~/.edgemicro/myorg-test-config.yaml .../cloud-foundry-apigee/samples/coresi
     verify_api_key_url: 'https://myorg-test.apigee.net/edgemicro-auth/verifyApiKey'
     ...
     ```
-    * Get edgemicro token:
+    * Get an edgemicro token:
       ```
        $ edgemicro token get -o <org> -e <env> -i <product key> -s <product secret>
       ```

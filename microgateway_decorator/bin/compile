@@ -24,8 +24,16 @@ cp $ROOT_DIR/lib/microgateway.js $BUILD_DIR/microgateway
 cp $ROOT_DIR/lib/package.json $BUILD_DIR/microgateway
 npm --prefix $BUILD_DIR/microgateway install
 
-if [ "$EDGEMICRO_CUST_PLUGINS" ]; then
-    cp -a $BUILD_DIR/$EDGEMICRO_CUST_PLUGINS/. $BUILD_DIR/tmp/edgemicro/plugins
+if [ "$APIGEE_MICROGATEWAY_CUST_PLUGINS" ]; then
+    for dir in $BUILD_DIR/$APIGEE_MICROGATEWAY_CUST_PLUGINS/*
+    do
+        test -d "$dir" || continue
+        file_count=$(find $dir -name package.json | wc -l)
+        if [[ $file_count -gt 0 ]]; then
+            npm --prefix $dir install
+        fi
+    done
+    cp -a $BUILD_DIR/$APIGEE_MICROGATEWAY_CUST_PLUGINS/. $BUILD_DIR/tmp/edgemicro/plugins
 fi
 
 mkdir -p $BUILD_DIR/.profile.d

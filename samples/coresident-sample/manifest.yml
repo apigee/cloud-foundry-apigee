@@ -6,7 +6,23 @@ applications:
   host: sample
   path: .
   env:
-    EDGEMICRO_CONFIG_DIR: /app/config
-    EDGEMICRO_ENV: <your-microgateway-env-name>
-    EDGEMICRO_ORG: <your-microgateway-org-name>
-    #  EDGEMICRO_CUST_PLUGINS: plugins
+    APIGEE_MICROGATEWAY_CONFIG_DIR: /app/config
+    APIGEE_MICROGATEWAY_ENV: <your-microgateway-env-name>
+    APIGEE_MICROGATEWAY_ORG: <your-microgateway-org-name>
+    #  APIGEE_MICROGATEWAY_CUST_PLUGINS: plugins
+    APIGEE_MICROGATEWAY_CUSTOM: |
+                                {"policies":
+                                  {
+                                  "oauth":
+                                    {
+                                      "allowNoAuthorization": false, 
+                                      "allowInvalidAuthorization": false
+                                    },
+                                  "spikearrest": 
+                                    {
+                                      "timeUnit": "minute", 
+                                      "allow": 10
+                                    }
+                                  },
+                                "sequence": ["oauth", "spikearrest"]
+                                }
