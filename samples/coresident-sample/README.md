@@ -77,6 +77,7 @@ $ cp ~/.edgemicro/myorg-test-config.yaml .../cloud-foundry-apigee/samples/coresi
         APIGEE_MICROGATEWAY_ENV: test
         APIGEE_MICROGATEWAY_ORG: org
         #  APIGEE_MICROGATEWAY_PLUGINS: plugins
+        #  APIGEE_MICROGATEWAY_CUSTOM: | {...}
     ```
     * If you are using the "response-override" plugin:
     ```yaml
@@ -85,6 +86,7 @@ $ cp ~/.edgemicro/myorg-test-config.yaml .../cloud-foundry-apigee/samples/coresi
         APIGEE_MICROGATEWAY_ENV: test
         APIGEE_MICROGATEWAY_ORG: org
         APIGEE_MICROGATEWAY_CUST_PLUGINS: plugins
+        #  APIGEE_MICROGATEWAY_CUSTOM: | {...}
     ```
 
 ## Step 3 Bind the App:
