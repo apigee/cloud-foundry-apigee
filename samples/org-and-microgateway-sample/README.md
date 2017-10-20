@@ -122,6 +122,14 @@ The console will display the app's response.
 
 1. Copy the configuration file to the following directory in the microgateway directory: `microgateway/config`.
 
+1. Add the `cloud-foundry-route-service` plugin to your microgateway config file:
+   ```yaml
+   plugins:
+    sequence:
+      - oauth
+      - cloud-foundry-route-service
+    ```   
+
 1. Edit the microgateway `manifest.yml` as follows:
 
    1. Edit the following env values so that they correspond to your Apigee Edge Microgateway configuration:
