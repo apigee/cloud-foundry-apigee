@@ -18,6 +18,7 @@ var parse = require('json-parse')
 var fs = require('fs')
 var spawn = require('child_process').spawn
 var yaml = require('js-yaml')
+const os = require('os')
 
 var run = function(){
     console.log("Starting Decorator")
@@ -75,14 +76,16 @@ var combineExisting = function(first, second){
 var getMicroData = function(){
     var micro_data = {
         required: {
-            APIGEE_MICROGATEWAY_ORG: process.env.APIGEE_MICROGATEWAY_ORG || '',
-            APIGEE_MICROGATEWAY_ENV: process.env.APIGEE_MICROGATEWAY_ENV || '',
-            APIGEE_MICROGATEWAY_CONFIG_DIR: process.env.APIGEE_MICROGATEWAY_CONFIG_DIR || '',
+            APIGEE_MICROGATEWAY_ORG: '',
+            APIGEE_MICROGATEWAY_ENV: '',
+            APIGEE_MICROGATEWAY_CONFIG_DIR: os.homedir() + "/" + process.env.APIGEE_MICROGATEWAY_CONFIG_DIR || '',
+            APIGEE_MICROGATEWAY_PROXY: process.env.APIGEE_MICROGATEWAY_PROXY || '',
             APIGEE_MICROGATEWAY_KEY: '',
             APIGEE_MICROGATEWAY_SECRET: ''
         },
         optional: {
-            APIGEE_MICROGATEWAY_CUSTOM: process.env.APIGEE_MICROGATEWAY_CUSTOM ? parseCustom(process.env.APIGEE_MICROGATEWAY_CUSTOM) : {}
+            APIGEE_MICROGATEWAY_CUSTOM: process.env.APIGEE_MICROGATEWAY_CUSTOM ? parseCustom(process.env.APIGEE_MICROGATEWAY_CUSTOM) : {},
+            APIGEE_MICROGATEWAY_PROCESSES: process.env.APIGEE_MICROGATEWAY_PROCESSES ? process.env.APIGEE_MICROGATEWAY_PROCESSES : ""
         }
     }
     var vcap_services = parse({})(process.env.VCAP_SERVICES)
@@ -94,6 +97,11 @@ var getMicroData = function(){
             if (plan.indexOf("microgateway-coresident") > -1){
                 micro_data.required.APIGEE_MICROGATEWAY_KEY = instance.credentials.edgemicro_key || ''
                 micro_data.required.APIGEE_MICROGATEWAY_SECRET = instance.credentials.edgemicro_secret || ''
+                micro_data.required.APIGEE_MICROGATEWAY_ORG = instance.credentials.apigee_org || ''
+                micro_data.required.APIGEE_MICROGATEWAY_ENV = instance.credentials.apigee_env || ''
+                if (micro_data.required.APIGEE_MICROGATEWAY_PROXY.length == 0) {
+                    micro_data.required.APIGEE_MICROGATEWAY_PROXY = instance.credentials.apigee_proxy || ''
+                }
             }
         }
     })
@@ -136,8 +144,11 @@ var configureMicro = function(micro_data, callback){
         }
 
         config_obj.edgemicro = config_obj.edgemicro ? config_obj.edgemicro : {}
+        
         var existing_seq = (config_obj.edgemicro.plugins && config_obj.edgemicro.plugins.sequence) ? config_obj.edgemicro.plugins.sequence : []
         var custom_seq = optional.APIGEE_MICROGATEWAY_CUSTOM.sequence ? optional.APIGEE_MICROGATEWAY_CUSTOM.sequence : []
+        
+        config_obj.edgemicro.proxies = [micro_data.required.APIGEE_MICROGATEWAY_PROXY]
         config_obj.edgemicro.plugins = {
             dir: "../plugins",
             sequence: combineExisting(existing_seq, custom_seq)
@@ -147,6 +158,7 @@ var configureMicro = function(micro_data, callback){
         Object.keys(policies).forEach(function(policy) {
             config_obj[policy] = policies[policy]
         })
+        
         
         var new_yaml = yaml.safeDump(config_obj)
         fs.writeFile(config_file, new_yaml, function(err) {
@@ -162,12 +174,24 @@ var configureMicro = function(micro_data, callback){
 }
 
 var startMicro = function(micro_data, callback){
-    var path_additions = ["/home/vcap/app/tmp/node/bin", "/home/vcap/app/tmp/edgemicro/cli"]
+    var path_additions = [os.homedir() + "/tmp/node/bin", os.homedir() + "/tmp/edgemicro/cli"]
     process.env.PATH += ":" + path_additions.join(":")
     
     console.log("Starting Apigee Microgateway...")
-    const edgemicro_args = ['start', '-o', micro_data.required.APIGEE_MICROGATEWAY_ORG, '-e', micro_data.required.APIGEE_MICROGATEWAY_ENV, '-k', micro_data.required.APIGEE_MICROGATEWAY_KEY, '-s', micro_data.required.APIGEE_MICROGATEWAY_SECRET, '-c', micro_data.required.APIGEE_MICROGATEWAY_CONFIG_DIR]
-    const start = spawn("edgemicro", edgemicro_args)
+    // const edgemicro_args = ['start', '-o', micro_data.required.APIGEE_MICROGATEWAY_ORG, '-e', micro_data.required.APIGEE_MICROGATEWAY_ENV, '-k', micro_data.required.APIGEE_MICROGATEWAY_KEY, '-s', micro_data.required.APIGEE_MICROGATEWAY_SECRET, '-c', micro_data.required.APIGEE_MICROGATEWAY_CONFIG_DIR]
+    // const start = spawn("edgemicro", edgemicro_args)
+    process.env.EDGEMICRO_ENV = micro_data.required.APIGEE_MICROGATEWAY_ENV
+    process.env.EDGEMICRO_ORG = micro_data.required.APIGEE_MICROGATEWAY_ORG
+    process.env.EDGEMICRO_SECRET = micro_data.required.APIGEE_MICROGATEWAY_SECRET
+    process.env.EDGEMICRO_KEY = micro_data.required.APIGEE_MICROGATEWAY_KEY
+    process.env.EDGEMICRO_CONFIG_DIR = micro_data.required.APIGEE_MICROGATEWAY_CONFIG_DIR
+    process.env.EDGEMICRO_DECORATOR = true
+    if (micro_data.optional.hasOwnProperty("APIGEE_MICROGATEWAY_PROCESSES").length > 0){
+        process.env.EDGEMICRO_PROCESSES = micro_data.optional.APIGEE_MICROGATEWAY_PROCESSES
+    }
+    
+
+    const start = spawn("node", [os.homedir() + "/tmp/edgemicro/app.js"])
 
     start.stdout.on('data', function(data){
         console.log(data.toString())

@@ -10,7 +10,7 @@ env:
                         "apigee_dashboard_url":"https://onprem.com/platform/#/",
                         "apigee_mgmt_api_url":"https://onprem.com/v1",
                         "apigee_proxy_domain":"onprem.net"},
-                        {"org":"myapp",
+                        {"org":"amer-demo5",
                         "env":"test",
                         "apigee_dashboard_url":"https://enterprise.apigee.com/platform/#/",
                         "apigee_mgmt_api_url":"https://api.enterprise.apigee.com/v1",
@@ -19,4 +19,10 @@ env:
                         "env":"test",
                         "apigee_dashboard_url":"https://enterprise.apigee.com/platform/#/",
                         "apigee_mgmt_api_url":"https://api.enterprise.apigee.com/v1",
-                        "apigee_proxy_domain":"apigee.net"}]
+                        "apigee_proxy_domain":"apigee.net"},
+                        {"org":"org-name-here",
+                        "env":"env-name-here",
+                        "apigee_dashboard_url":"https://enterprise.apigee.com/platform/#/",
+                        "apigee_mgmt_api_url":"https://api.enterprise.apigee.com/v1",
+                        "apigee_proxy_domain":"apigee.net"}
+                        ]

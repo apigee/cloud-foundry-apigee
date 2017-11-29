@@ -41,13 +41,18 @@ function createProxy (bindReq, callback) {
 
   var union = {}
   if (Object.getOwnPropertyNames(bindReq.micro_coresident).length > 0) {
-      proxyHostTemplate = bindReq.micro_coresident.target_app_route
       mangledName = 'edgemicro_' + mangledName
       union = Object.assign({
         domain: bindReq.configuration.get('APIGEE_PROXY_DOMAIN'),
         proxyname: mangledName,
-        basepath: '/',
-        credentials: { edgemicro_key: bindReq.micro_coresident.edgemicro_key, edgemicro_secret: bindReq.micro_coresident.edgemicro_secret }
+        basepath: '/' + bindReq.micro_coresident.target_app_route,
+        credentials: { 
+          edgemicro_key: bindReq.micro_coresident.edgemicro_key, 
+          edgemicro_secret: bindReq.micro_coresident.edgemicro_secret,
+          apigee_org: bindReq.org,
+          apigee_env: bindReq.env,
+          apigee_proxy: mangledName
+        }
       }, bindReq)
   }
   else{
@@ -62,6 +67,8 @@ function createProxy (bindReq, callback) {
       credentials: {}
     }, bindReq)
   }
+
+  logger.log.info('domain: ', union.domain, ' proxyname: ', union.proxyname, ' basepath: ', union.basepath) 
 
   var bindResponse = function(deployRes) {
     if (bindReq.action.bind) {
@@ -136,7 +143,7 @@ function getZip (proxyData, callback) {
         } else {
           var dummyTargetUrl
           if(Object.getOwnPropertyNames(proxyData.micro_coresident).length > 0){
-            dummyTargetUrl = proxyData.protocol + "://localhost:" + proxyData.micro_coresident.target_app_port
+            dummyTargetUrl = "http://localhost:" + proxyData.micro_coresident.target_app_port
           }
           else{
             dummyTargetUrl = proxyData.protocol + "://" + proxyData.bind_resource.route  // Actual is X-Cf-Forwarded-Url header

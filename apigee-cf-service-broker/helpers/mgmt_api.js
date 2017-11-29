@@ -91,6 +91,7 @@ function getProxyRevision (proxyData, callback) {
   var options = {
     url: org(proxyData, 'apis', proxyData.proxyname)
   }
+  logger.log.info("Get proxy revision url: " + options.url)
   auth(options, proxyData)
   request.get(options, function (err, res, body) {
     if (err) {
@@ -127,6 +128,7 @@ function importProxy (proxyData, zipBuffer, callback) {
       name: proxyData.proxyname
     }
   }
+  logger.log.info("Import proxy url: " + options.url, " proxy name: ", options.qs.name)
   auth(options, proxyData)
   request.post(options, function (err, httpResponse, body) {
     if (err) {
@@ -158,6 +160,7 @@ function deployProxy (proxyData, callback) {
       var options = {
         url: deployments(proxyData, revision)
       }
+      logger.log.info("Deploy proxy url: " + options.url)
       auth(options, proxyData)
       request.post(options, function (err, res, body) {
         if (err) {
@@ -189,6 +192,7 @@ function undeployProxy (proxyData, callback) {
       var options = {
         url: deployments(proxyData, revision)
       }
+      logger.log.info("Undeploy proxy url: " + options.url)
       auth(options, proxyData)
       request.del(options, function (err, res, body) {
         if (err) {
@@ -206,6 +210,7 @@ function getVirtualHosts (proxyData, callback) {
   var options = {
     url: orgEnv(proxyData, 'virtualhosts')
   }
+  logger.log.info("Get virtual hosts url: " + options.url)
   auth(options, proxyData)
   request.get(options, function (err, res, body) {
     if (err) {
@@ -226,6 +231,7 @@ function authenticate (authOptions, callback) {
   var options = {
     url: org(authOptions)
   }
+  logger.log.info("Authenticate url: " + options.url)
   auth(options, authOptions)
   request.get(options, function (err, res, body) {
     if (err) {

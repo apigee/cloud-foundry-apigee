@@ -63,6 +63,7 @@ var getApigeeConfiguration = function(user_org, user_env, callback){
             if (configurations[i].org === user_org && configurations[i].env === user_env){
                 Object.keys(configurations[i]).forEach(function(key) {
                     nconf.set(key.toUpperCase(),configurations[i][key])
+                    logger.log.info("Config key: ", key.toUpperCase(), " = ", configurations[i][key])
                 })
                 return callback(null, nconf)
             }

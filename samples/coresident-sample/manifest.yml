@@ -6,22 +6,23 @@ applications:
   host: sample
   path: .
   env:
-    APIGEE_MICROGATEWAY_CONFIG_DIR: /app/config
-    APIGEE_MICROGATEWAY_ENV: <your-microgateway-env-name>
-    APIGEE_MICROGATEWAY_ORG: <your-microgateway-org-name>
-    #  APIGEE_MICROGATEWAY_CUST_PLUGINS: plugins
+    # APIGEE_MICROGATEWAY_PROXY: edgemicro_cf-test.local.pcfdev.io
+    APIGEE_MICROGATEWAY_CONFIG_DIR: config
+    # APIGEE_MICROGATEWAY_CUST_PLUGINS: plugins
+    # APIGEE_MICROGATEWAY_PROCESSES: 2
     APIGEE_MICROGATEWAY_CUSTOM: |
                                 {"policies":
                                   {
                                   "oauth":
                                     {
-                                      "allowNoAuthorization": false, 
-                                      "allowInvalidAuthorization": false
+                                      "allowNoAuthorization": true, 
+                                      "allowInvalidAuthorization": true,
+                                      "verify_api_key_url": "https://amer-demo5-test.apigee.net/edgemicro-auth/verifyApiKey"
                                     },
-                                  "spikearrest": 
+                                  "spikearrest":
                                     {
-                                      "timeUnit": "minute", 
-                                      "allow": 10
+                                      "allow": 10,
+                                      "timeUnit": "minute"
                                     }
                                   },
                                 "sequence": ["oauth", "spikearrest"]

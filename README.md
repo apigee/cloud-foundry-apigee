@@ -22,6 +22,6 @@ The integrations below are enabled. See the following for suggested processes an
 
 - **Open source Cloud Foundry** and **Apigee Edge (public and private cloud)**
   1. See [Cloud Foundry Service Broker for Apigee](apigee-cf-service-broker) for
-      - Differences between the two microgateway plans (`microgateway` & `microgateway-coresident`) and the `org` plan
-      - Links to instructions based on your plan choice
+    - Differences between the two microgateway plans (`microgateway` & `microgateway-coresident`) and the `org` plan
+    - Links to instructions based on your plan choice
   1. For the direct link to the `org` plan instructions, see [setup-org](docs/setup-org.md)
