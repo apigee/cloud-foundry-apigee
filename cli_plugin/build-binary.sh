@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-PLUGIN_PATH=$GOPATH/src/broker_plugin
+PLUGIN_PATH=$GOPATH/src/apigee-broker-plugin
 PLUGIN_NAME=$(basename $PLUGIN_PATH)
 
 cd $PLUGIN_PATH
