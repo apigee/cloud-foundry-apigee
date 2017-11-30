@@ -130,10 +130,10 @@ These instructions assume a local [PCF Dev](https://pivotal.io/pcf-dev) environm
     * Install the plugin
     ```bash
         cd $GOPATH
-        go build broker_plugin && cf install-plugin broker_plugin
+        go build apigee-broker-plugin && cf install-plugin apigee-broker-plugin
         Attention: Plugins are binaries written by potentially untrusted authors.
         Install and use plugins at your own risk.
-        Do you want to install the plugin broker_plugin? [yN]: y
+        Do you want to install the plugin apigee-broker-plugin? [yN]: y
         Installing plugin Apigee-Broker-Plugin...
         OK
         Plugin Apigee-Broker-Plugin 0.1.1 successfully installed.
