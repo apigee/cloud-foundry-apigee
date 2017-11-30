@@ -96,7 +96,7 @@ $ cp ~/.edgemicro/myorg-test-config.yaml .../cloud-foundry-apigee/samples/coresi
   ```
   * Install the plugin
   ```bash
-  $ cf install-plugin broker_plugin
+  $ cf install-plugin apigee-broker-plugin.<os>
   ```
   * Press yes when propted
   * Make sure it worked
