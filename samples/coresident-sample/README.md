@@ -91,40 +91,25 @@ $ cp ~/.edgemicro/myorg-test-config.yaml .../cloud-foundry-apigee/samples/coresi
 
 ## Step 3: Install the Plugin:
 
-1. Insure that you have golang installed. If you don't follow the instructions [here](https://golang.org/doc/)
-
-1. Change to the cli_plugin directory.
-
-    ```bash
-    cd cli_plugin
-    ```
-
 1. Install the Apigee Broker Plugin as follows.
-    * Install the necessary libraries 
     ```bash
-        export GOPATH=$(pwd)
-        mkdir -p "${GOPATH}/src/code.cloudfoundry.org"
-        cd "${GOPATH}/src/code.cloudfoundry.org"
-        git clone "https://github.com/cloudfoundry/cli"
-        cd "${GOPATH}/src” 
-        go get golang.org/x/crypto/ssh/terminal
-    ```
-    * Install the plugin
-    ```bash
-        cd $GOPATH
-        go build apigee-broker-plugin && cf install-plugin apigee-broker-plugin
-        Attention: Plugins are binaries written by potentially untrusted authors.
-        Install and use plugins at your own risk.
-        Do you want to install the plugin apigee-broker-plugin? [yN]: y
-        Installing plugin Apigee-Broker-Plugin...
-        OK
-        Plugin Apigee-Broker-Plugin 0.1.1 successfully installed.
+    $ cf install-plugin -r CF-Community "apigee-broker-plugin"                                                                                                                                 
+    Searching CF-Community for plugin apigee-broker-plugin...
+    Plugin apigee-broker-plugin 0.1.1 found in: CF-Community
+    Attention: Plugins are binaries written by potentially untrusted authors.
+    Install and use plugins at your own risk.
+    Do you want to install the plugin apigee-broker-plugin? [yN]: y
+    Starting download of plugin binary from repository CF-Community...
+    7.85 MiB / 7.85 MiB [===========================================================================================================================================================================================================================================] 100.00% 11s
+    Installing plugin Apigee-Broker-Plugin...
+    OK
+    Plugin Apigee-Broker-Plugin 0.1.1 successfully installed.
     ```
 
 1. Make sure the plugin is available by running the following command:
 
     ```bash
-    cf -h
+    $ cf -h
     …
     Commands offered by installed plugins:
       apigee-bind-mg,abm      apigee-unbind-mgc,auc    enable-diego
