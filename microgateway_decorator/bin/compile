@@ -16,7 +16,7 @@ rm node-v6.11.3-linux-x64.tar.gz
 export PATH=$PATH:${BUILD_DIR}/tmp/node/bin
 # npm --prefix $BUILD_DIR/tmp/edgemicro install edgemicro
 git clone https://github.com/apigee-internal/microgateway.git $BUILD_DIR/tmp/edgemicro
-(cd $BUILD_DIR/tmp/edgemicro && git checkout tags/v2.5.8-beta)
+(cd $BUILD_DIR/tmp/edgemicro && git checkout tags/v2.5.8)
 npm --prefix $BUILD_DIR/tmp/edgemicro install
 
 mkdir -p $BUILD_DIR/microgateway

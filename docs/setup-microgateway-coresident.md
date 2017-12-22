@@ -99,8 +99,9 @@ These instructions assume a local [PCF Dev](https://pivotal.io/pcf-dev) environm
 ## <a name="instance"></a>Step 2: Install the plugin
 
 1. Install the Apigee Broker Plugin as follows.
-    ```bash
-    $ cf install-plugin -r CF-Community "apigee-broker-plugin"                                                                                                                                 
+
+    ```
+    $ cf install-plugin -r CF-Community "apigee-broker-plugin"
     Searching CF-Community for plugin apigee-broker-plugin...
     Plugin apigee-broker-plugin 0.1.1 found in: CF-Community
     Attention: Plugins are binaries written by potentially untrusted authors.
@@ -171,26 +172,43 @@ Here, you install Apigee Edge Microgateway and your Cloud Foundry app to the sam
         ```yaml
         env:
         ...
-	    APIGEE_MICROGATEWAY_CONFIG_DIR: config
-	    APIGEE_MICROGATEWAY_CUST_PLUGINS: plugins
-	    APIGEE_MICROGATEWAY_PROCESSES: 2
-        APIGEE_MICROGATEWAY_CUSTOM: |
-                                    {"policies":
-                                    {
-                                    "oauth":
-                                        {
-                                        "allowNoAuthorization": false, 
-                                        "allowInvalidAuthorization": false
-                                        },
-                                    "spikearrest": 
-                                        {
-                                        "timeUnit": "minute", 
-                                        "allow": 10
-                                        }
-                                    },
-                                    "sequence": ["oauth", "spikearrest"]
-                                    }
+  	    APIGEE_MICROGATEWAY_CONFIG_DIR: config
+  	    APIGEE_MICROGATEWAY_CUST_PLUGINS: plugins
+  	    APIGEE_MICROGATEWAY_PROCESSES: 2
+          APIGEE_MICROGATEWAY_CUSTOM: |
+                                      {"policies":
+                                      {
+                                      "oauth":
+                                          {
+                                          "allowNoAuthorization": false, 
+                                          "allowInvalidAuthorization": false
+                                          },
+                                      "spikearrest": 
+                                          {
+                                          "timeUnit": "minute", 
+                                          "allow": 10
+                                          }
+                                      },
+                                      "sequence": ["oauth", "spikearrest"]
+                                      }
         ```
+
+        To support Cloud Foundry application health check, make sure your `applications` block includes the `health-check-type` and `health-check-http-endpoint` properties:
+        
+        ```yaml
+        health-check-type: http
+        health-check-http-endpoint: /healthcheck
+        ```        
+
+        Also, the `sequence` property must include a reference to the `healthcheck` plugin, as shown here.
+
+        ```yaml
+        "sequence": ["healthcheck", "oauth", "spikearrest"]
+        ```
+
+        For more on health check, see [Using Application Health Checks](https://docs.cloudfoundry.org/devguide/deploy-apps/healthchecks.html).
+ 
+        The following describes the manifest properties:
 
         Variable | Description
         ---- | ----
@@ -198,8 +216,10 @@ Here, you install Apigee Edge Microgateway and your Cloud Foundry app to the sam
         `APIGEE_MICROGATEWAY_CUST_PLUGINS` | Location of your Apigee Microgateway plugins directory.
         `APIGEE_MICROGATEWAY_PROCESSES` | The number of child processes that Apigee Microgateway should start. If your Microgateway performance is poor, setting this value higher might improve it.
         `APIGEE_MICROGATEWAY_CUSTOM` | “sequence” corresponds to the sequence order in the microgateway yaml file (this will be added on to the end of any current sequence in the microgateway yaml file with duplicates removed).<br/><br/>“policies” correspond to any specific configuration needed by a plugin; for instance, “oauth” has the ‘"allowNoAuthorization": true configuration. These policies will overwrite any existing policies in the microgateway yaml file and add any that do not yet exist.
+        
     - Configure the microgateway yaml file from step 2 to include the necessary plugins. For example if we added a “spikearrest” plugin:
-    ```yaml
+
+        ```yaml
         ...
         plugins:
             dir: ../plugins
