@@ -7,12 +7,37 @@ BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
 
+function install_nodejs
+{
+  NODE_WGET=$1
+  NODEJS_FILENAME=$2
+  wget --quiet $NODE_WGET
+  tar --touch --strip-components 1 -xzf $NODEJS_FILENAME -C $BUILD_DIR/tmp/node
+  rm $NODEJS_FILENAME
+}
+
 mkdir -p $BUILD_DIR/tmp/node
 mkdir -p $BUILD_DIR/tmp/edgemicro
+if [ ! -z "$APIGEE_MICROGATEWAY_NODEJS_URL" ]; then
+  install_nodejs "$APIGEE_MICROGATEWAY_NODEJS_URL/$APIGEE_MICROGATEWAY_NODEJS_FILENAME" "$APIGEE_MICROGATEWAY_NODEJS_FILENAME"
+  #wget --quiet $APIGEE_MICROGATEWAY_NODEJS_URL/$APIGEE_MICROGATEWAY_NODEJS_FILENAME
+  #tar --touch --strip-components 1 -xzf $APIGEE_MICROGATEWAY_NODEJS_FILENAME -C $BUILD_DIR/tmp/node
+  #rm $APIGEE_MICROGATEWAY_NODEJS_FILENAME
+elif [ -z "$APIGEE_MICROGATEWAY_NODEJS_VERSION" ]; then
+  echo "using https://nodejs.org/dist/v8.11.3/node-v8.11.3-linux-x64.tar.gz"
+  install_nodejs "https://nodejs.org/dist/v8.11.3/node-v8.11.3-linux-x64.tar.gz" "node-v8.11.3-linux-x64.tar.gz"
+  #wget --quiet https://nodejs.org/dist/v8.11.3/node-v8.11.3-linux-x64.tar.gz
+  #tar --touch --strip-components 1 -xzf node-v8.11.3-linux-x64.tar.gz -C $BUILD_DIR/tmp/node
+  #rm node-v8.11.3-linux-x64.tar.gz
+else
+  NODE_FILENAME="node-v$APIGEE_MICROGATEWAY_NODEJS_VERSION-linux-x64.tar.gz"
+  echo "using $NODE_FILENAME"
+  install_nodejs "https://nodejs.org/dist/v$APIGEE_MICROGATEWAY_NODEJS_VERSION/$NODE_FILENAME" "$NODE_FILENAME"
+  #wget --quiet https://nodejs.org/dist/v$APIGEE_MICROGATEWAY_NODEJS_VERSION/$NODE_FILENAME
+  #tar --touch --strip-components 1 -xzf $NODE_FILENAME -C $BUILD_DIR/tmp/node
+  #rm $NODE_FILENAME
+fi
 
-wget --quiet https://nodejs.org/dist/v6.11.3/node-v6.11.3-linux-x64.tar.gz
-tar --touch --strip-components 1 -xzf node-v6.11.3-linux-x64.tar.gz -C $BUILD_DIR/tmp/node
-rm node-v6.11.3-linux-x64.tar.gz
 export PATH=$PATH:${BUILD_DIR}/tmp/node/bin
 # npm --prefix $BUILD_DIR/tmp/edgemicro install edgemicro
 git clone https://github.com/apigee-internal/microgateway.git $BUILD_DIR/tmp/edgemicro
