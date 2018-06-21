@@ -86,6 +86,7 @@ var getMicroData = function(){
         optional: {
             APIGEE_MICROGATEWAY_CUSTOM: process.env.APIGEE_MICROGATEWAY_CUSTOM ? parseCustom(process.env.APIGEE_MICROGATEWAY_CUSTOM) : {},
             APIGEE_MICROGATEWAY_PROCESSES: process.env.APIGEE_MICROGATEWAY_PROCESSES ? process.env.APIGEE_MICROGATEWAY_PROCESSES : "",
+            APIGEE_MICROGATEWAY_NODEJS_LOCAL_INSTALL: process.env.APIGEE_MICROGATEWAY_NODEJS_LOCAL_INSTALL ? process.env.APIGEE_MICROGATEWAY_NODEJS_LOCAL_INSTALL : false,
             APIGEE_MICROGATEWAY_NODEJS_URL: process.env.APIGEE_MICROGATEWAY_NODEJS_URL ? process.env.APIGEE_MICROGATEWAY_NODEJS_URL : "",
             APIGEE_MICROGATEWAY_NODEJS_FILENAME: process.env.APIGEE_MICROGATEWAY_NODEJS_FILENAME ? process.env.APIGEE_MICROGATEWAY_NODEJS_FILENAME : "",
             APIGEE_MICROGATEWAY_NODEJS_VERSION: process.env.APIGEE_MICROGATEWAY_NODEJS_VERSION ? process.env.APIGEE_MICROGATEWAY_NODEJS_VERSION : ""
@@ -111,23 +112,6 @@ var getMicroData = function(){
     return micro_data
 }
 
-var checkNodejsFileNameAndURL = function(optional){
-  if((optional.APIGEE_MICROGATEWAY_NODEJS_URL !== ''
-      && optional.APIGEE_MICROGATEWAY_NODEJS_FILENAME === '')
-    || (optional.APIGEE_MICROGATEWAY_NODEJS_URL === ''
-      && optional.APIGEE_MICROGATEWAY_NODEJS_FILENAME !== '')) {
-    return {"isValid": false, "message": "If you include the APIGEE_MICROGATEWAY_NODEJS_URL then you must include the APIGEE_MICROGATEWAY_NODEJS_FILENAME as well."};
-  }
-  else if (optional.APIGEE_MICROGATEWAY_NODEJS_FILENAME !== ''
-    && optional.APIGEE_MICROGATEWAY_NODEJS_URL.indexOf('https://') === -1
-      && optional.APIGEE_MICROGATEWAY_NODEJS_URL.indexOf('http://') === -1){
-    return {"isValid": false, "message": "APIGEE_MICROGATEWAY_NODEJS_URL does not include a valid protocol (https or http)"};
-  }
-  else {
-    return {"isValid": true};
-  }
-}
-
 var validateMicroData = function(micro_data, callback){
     var required = micro_data.required
     var optional = micro_data.optional
@@ -142,9 +126,6 @@ var validateMicroData = function(micro_data, callback){
     }
     else if (optional.APIGEE_MICROGATEWAY_CUSTOM.error){
         callback(optional.APIGEE_MICROGATEWAY_CUSTOM.error)
-    }
-    else if((result = checkNodejsFileNameAndURL(optional)).isValid === false){
-        callback(result.message);
     }
     else{
         callback(null)
