@@ -19,6 +19,7 @@ var fs = require('fs')
 var spawn = require('child_process').spawn
 var yaml = require('js-yaml')
 const os = require('os')
+const edgemicroDefaultVersion = "2.5.19";
 
 var run = function(){
     console.log("Starting Decorator")
@@ -89,7 +90,8 @@ var getMicroData = function(){
             APIGEE_MICROGATEWAY_NODEJS_LOCAL_INSTALL: process.env.APIGEE_MICROGATEWAY_NODEJS_LOCAL_INSTALL ? process.env.APIGEE_MICROGATEWAY_NODEJS_LOCAL_INSTALL : false,
             APIGEE_MICROGATEWAY_NODEJS_URL: process.env.APIGEE_MICROGATEWAY_NODEJS_URL ? process.env.APIGEE_MICROGATEWAY_NODEJS_URL : "",
             APIGEE_MICROGATEWAY_NODEJS_FILENAME: process.env.APIGEE_MICROGATEWAY_NODEJS_FILENAME ? process.env.APIGEE_MICROGATEWAY_NODEJS_FILENAME : "",
-            APIGEE_MICROGATEWAY_NODEJS_VERSION: process.env.APIGEE_MICROGATEWAY_NODEJS_VERSION ? process.env.APIGEE_MICROGATEWAY_NODEJS_VERSION : ""
+            APIGEE_MICROGATEWAY_NODEJS_VERSION: process.env.APIGEE_MICROGATEWAY_NODEJS_VERSION ? process.env.APIGEE_MICROGATEWAY_NODEJS_VERSION : "",
+            APIGEE_MICROGATEWAY_VERSION: process.env.APIGEE_MICROGATEWAY_VERSION ? process.env.APIGEE_MICROGATEWAY_VERSION : edgemicroDefaultVersion
         }
     }
     var vcap_services = parse({})(process.env.VCAP_SERVICES)

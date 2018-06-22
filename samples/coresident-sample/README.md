@@ -128,7 +128,27 @@ $ cp ~/.edgemicro/myorg-test-config.yaml .../cloud-foundry-apigee/samples/coresi
         # APIGEE_MICROGATEWAY_PROCESSES: 2
         #  APIGEE_MICROGATEWAY_CUSTOM: | {...} --> uncomment if applicable
     ```
-
+    * If you don't include `APIGEE_MICROGATEWAY_VERSION`, then it will use the most current version in the repository.
+    * If you want to use specific version of Edge Microgateway, then include this environment variable.  This will execute a git clone on the https://github.com/apigee-internal/microgateway repository.
+    ```yaml
+    env:
+        # APIGEE_MICROGATEWAY_PROXY: edgemicro_cf-test.local.pcfdev.io
+        APIGEE_MICROGATEWAY_VERSION: 2.5.19
+        APIGEE_MICROGATEWAY_CONFIG_DIR: config
+        # APIGEE_MICROGATEWAY_NODEJS_LOCAL_INSTALL: false
+        # APIGEE_MICROGATEWAY_PROCESSES: 2
+        #  APIGEE_MICROGATEWAY_CUSTOM: | {...} --> uncomment if applicable
+    ```
+    * If you want to use specific version of Edge Microgateway and install locally then clone the repository into the `lib` directory in the `microgateway_decorator` folder.  In this case, the decorator will use the locally cloned repository instead of cloning from github.com.
+    ```yaml
+    env:
+        # APIGEE_MICROGATEWAY_PROXY: edgemicro_cf-test.local.pcfdev.io
+        APIGEE_MICROGATEWAY_VERSION: 2.5.19
+        APIGEE_MICROGATEWAY_CONFIG_DIR: config
+        # APIGEE_MICROGATEWAY_NODEJS_LOCAL_INSTALL: false
+        # APIGEE_MICROGATEWAY_PROCESSES: 2
+        #  APIGEE_MICROGATEWAY_CUSTOM: | {...} --> uncomment if applicable
+    ```
 
 
 ## Step 3: Install the Plugin:

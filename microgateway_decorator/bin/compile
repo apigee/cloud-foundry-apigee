@@ -98,8 +98,32 @@ fi
 
 export PATH=$PATH:${BUILD_DIR}/tmp/node/bin
 # npm --prefix $BUILD_DIR/tmp/edgemicro install edgemicro
-git clone https://github.com/apigee-internal/microgateway.git $BUILD_DIR/tmp/edgemicro
-(cd $BUILD_DIR/tmp/edgemicro && git checkout tags/v2.5.8)
+
+# local installation if microgateway folder exists in lib directory
+if [ -d "$ROOT_DIR/lib/microgateway" ]; then
+  echo "Installing Edge Microgateway from lib directory."
+  cp -a $ROOT_DIR/lib/microgateway/. $BUILD_DIR/tmp/edgemicro
+else #clone from github
+  echo "Cloning Edge Microgateway from Github."
+  git clone https://github.com/apigee-internal/microgateway.git $BUILD_DIR/tmp/edgemicro
+fi
+
+# the envrionment variable is not a zero length string
+if [ ! -z "$APIGEE_MICROGATEWAY_VERSION" ]; then
+  echo "Trying git checkout tags/$APIGEE_MICROGATEWAY_VERSION"
+  CHECKOUT_RESULT=`(cd $BUILD_DIR/tmp/edgemicro && git checkout tags/$APIGEE_MICROGATEWAY_VERSION)`
+  if [ $? -ne 0  ]; then # version not found then prepend v to tag
+    echo "Trying git checkout tags/v$APIGEE_MICROGATEWAY_VERSION instead."
+    CHECKOUT_RESULT=`(cd $BUILD_DIR/tmp/edgemicro && git checkout tags/v$APIGEE_MICROGATEWAY_VERSION)`
+    if [ $? -ne 0  ]; then # fail the compile step
+      echo "The Edgemicro tag $APIGEE_MICROGATEWAY_VERSION does not exist." >&2
+      exit 1
+    fi
+  fi
+else # using most current version of Edge Microgateway.
+  echo "Not executing git checkout; using most current version in git repository instead."
+fi
+
 npm --prefix $BUILD_DIR/tmp/edgemicro install
 
 mkdir -p $BUILD_DIR/microgateway

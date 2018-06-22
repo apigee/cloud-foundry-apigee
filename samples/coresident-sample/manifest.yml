@@ -15,6 +15,7 @@ applications:
     #APIGEE_MICROGATEWAY_NODEJS_LOCAL_INSTALL: true # must be set to true or false; if not included then false is assumed
     #APIGEE_MICROGATEWAY_NODEJS_FILENAME: node-v6.11.3-linux-x64.tar.gz
     #APIGEE_MICROGATEWAY_NODEJS_VERSION: 8.11.3 #will fetch from https://nodejs.org/dist
+    #APIGEE_MICROGATEWAY_VERSION: 2.5.19 #will fetch from https://github.com/apigee-internal/microgateway
     APIGEE_MICROGATEWAY_CONFIG_DIR: config
     APIGEE_MICROGATEWAY_CUSTOM: |
                                 {"policies":
