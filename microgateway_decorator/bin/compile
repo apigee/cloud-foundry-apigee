@@ -6,21 +6,19 @@ ROOT_DIR=$(dirname $BIN_DIR)
 BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
+NODEJS_PARTIAL_URL="https://nodejs.org/dist/v"
+DEFAULT_NODEJS_URL="https://nodejs.org/dist/v8.11.3/node-v8.11.3-linux-x64.tar.gz"
+DEFAULT_NODEJS_FILENAME=$(basename "$DEFAULT_NODEJS_URL")
 
-# make sure that the APIGEE_MICROGATEWAY_NODEJS_LOCAL_INSTALL variable is
-# true or false and if it is not set then assume that it is false.
-function check_nodejslocalinstall_env_var
-{
-  echo "checking APIGEE_MICROGATEWAY_NODEJS_LOCAL_INSTALL variable."
-  if [ "$APIGEE_MICROGATEWAY_NODEJS_LOCAL_INSTALL" != true ] && [ "$APIGEE_MICROGATEWAY_NODEJS_LOCAL_INSTALL" != false ]; then
-    #if local install is not true or false then check if it is not a zero length string
-    #a zero length string is ok and we will assume false
-    if [ ! -z "$APIGEE_MICROGATEWAY_NODEJS_LOCAL_INSTALL" ]; then
-      echo "APIGEE_MICROGATEWAY_NODEJS_LOCAL_INSTALL must be set to true or false." >&2
-      exit 1
-    fi
+function check_file_mimetype {
+  echo "Checking file mime-type."
+  FILENAME=$1
+  MIMETYPE=`file -b --mime-type $FILENAME`
+  echo "$MIMETYPE"
+  if [[ ${MIMETYPE} != *"gzip"* ]]; then
+    echo "The $FILENAME is not gzip. Please convert the file to gzip and try the request again." >&2
+    exit 1
   fi
-  echo "APIGEE_MICROGATEWAY_NODEJS_LOCAL_INSTALL is not set, so assume false."
 }
 
 function untar
@@ -39,6 +37,7 @@ function wget_and_untar
     echo "Node.js was not downloaded successfully from $NODE_WGET." >&2
     exit 1
   fi
+  check_file_mimetype $NODEJS_FILENAME
   untar $NODEJS_FILENAME
   rm $NODEJS_FILENAME
 }
@@ -49,27 +48,21 @@ function wget_and_untar
 # or the url is present and the file name is missing
 function check_nodejs_filename_and_url {
   echo "Checking APIGEE_MICROGATEWAY_NODEJS_FILENAME and APIGEE_MICROGATEWAY_NODEJS_URL environment variables."
-  # check if the value is set to false or if it is zero length then assume false.
-  if [ "$APIGEE_MICROGATEWAY_NODEJS_LOCAL_INSTALL" == false ] || [ -z "$APIGEE_MICROGATEWAY_NODEJS_LOCAL_INSTALL" ]; then
-    echo "APIGEE_MICROGATEWAY_NODEJS_LOCAL_INSTALL is either set to false or assumed false."
-    if [ "$APIGEE_MICROGATEWAY_NODEJS_URL" != "" ] && [ "$APIGEE_MICROGATEWAY_NODEJS_FILENAME" == "" ]; then
-      echo "If you set APIGEE_MICROGATEWAY_NODEJS_URL=$APIGEE_MICROGATEWAY_NODEJS_URL then you must also set APIGEE_MICROGATEWAY_NODEJS_FILENAME as well." >&2
-      exit 1
-    elif [ "$APIGEE_MICROGATEWAY_NODEJS_URL" == "" ] && [ "$APIGEE_MICROGATEWAY_NODEJS_FILENAME" != "" ]; then
-      echo "If you set APIGEE_MICROGATEWAY_NODEJS_FILENAME=$APIGEE_MICROGATEWAY_NODEJS_FILENAME then you must also set APIGEE_MICROGATEWAY_NODEJS_URL as well." >&2
-      exit 1
-    else
-      if [ "$APIGEE_MICROGATEWAY_NODEJS_FILENAME" != "" ]; then
-        if ! grep -q "http://" <<< "$APIGEE_MICROGATEWAY_NODEJS_URL" && ! grep -q "https://" <<< "$APIGEE_MICROGATEWAY_NODEJS_URL" ; then
-          echo "$APIGEE_MICROGATEWAY_NODEJS_URL does not include a valid protocol (https or http)" >&2
-          exit 1
-        fi
+  if [ "$APIGEE_MICROGATEWAY_NODEJS_URL" != "" ] && [ "$APIGEE_MICROGATEWAY_NODEJS_FILENAME" != "" ]; then
+    echo "Either APIGEE_MICROGATEWAY_NODEJS_URL or APIGEE_MICROGATEWAY_NODEJS_FILENAME should be included, but you should not include both." >&2
+    exit 1
+  elif [ "$APIGEE_MICROGATEWAY_NODEJS_URL" != "" ]; then
+      NODE_FILENAME=$(basename "$APIGEE_MICROGATEWAY_NODEJS_URL")
+      if ! grep -q "http://" <<< "$APIGEE_MICROGATEWAY_NODEJS_URL" && ! grep -q "https://" <<< "$APIGEE_MICROGATEWAY_NODEJS_URL" ; then
+        echo "$APIGEE_MICROGATEWAY_NODEJS_URL does not include a valid protocol (https or http)" >&2
+        exit 1
       fi
-    fi
-  elif [ $APIGEE_MICROGATEWAY_NODEJS_LOCAL_INSTALL == true ]; then
+  elif [ "$APIGEE_MICROGATEWAY_NODEJS_FILENAME" != "" ]; then
     if [ ! -f "$ROOT_DIR/lib/$APIGEE_MICROGATEWAY_NODEJS_FILENAME" ]; then
       echo "APIGEE_MICROGATEWAY_NODEJS_LOCAL_INSTALL is set to true but APIGEE_MICROGATEWAY_NODEJS_FILENAME=$APIGEE_MICROGATEWAY_NODEJS_FILENAME and that file does not exist in the lib directory. Exiting..." >&2
       exit 1
+    else
+      check_file_mimetype $APIGEE_MICROGATEWAY_NODEJS_FILENAME
     fi
   fi
   echo "APIGEE_MICROGATEWAY_NODEJS_FILENAME and APIGEE_MICROGATEWAY_NODEJS_URL environment variables are set correctly."
@@ -78,22 +71,21 @@ function check_nodejs_filename_and_url {
 mkdir -p $BUILD_DIR/tmp/node
 mkdir -p $BUILD_DIR/tmp/edgemicro
 
-check_nodejslocalinstall_env_var
 check_nodejs_filename_and_url
 
-if [ "$APIGEE_MICROGATEWAY_NODEJS_LOCAL_INSTALL" == true ]; then
+if [ -f "$ROOT_DIR/lib/$APIGEE_MICROGATEWAY_NODEJS_FILENAME" ]; then
   echo "This is a local Node.js installation."
   untar "$ROOT_DIR/lib/$APIGEE_MICROGATEWAY_NODEJS_FILENAME"
-elif [ ! -z "$APIGEE_MICROGATEWAY_NODEJS_URL" ]; then
+elif [ ! -z "$APIGEE_MICROGATEWAY_NODEJS_URL" ]; then # APIGEE_MICROGATEWAY_NODEJS_URL is declared
   echo "Fetch Node.js tar from $APIGEE_MICROGATEWAY_NODEJS_URL/$APIGEE_MICROGATEWAY_NODEJS_FILENAME"
   wget_and_untar "$APIGEE_MICROGATEWAY_NODEJS_URL/$APIGEE_MICROGATEWAY_NODEJS_FILENAME" "$APIGEE_MICROGATEWAY_NODEJS_FILENAME"
-elif [ -z "$APIGEE_MICROGATEWAY_NODEJS_VERSION" ]; then
-  echo "Fetch Node.js from https://nodejs.org/dist/v8.11.3/node-v8.11.3-linux-x64.tar.gz"
-  wget_and_untar "https://nodejs.org/dist/v8.11.3/node-v8.11.3-linux-x64.tar.gz" "node-v8.11.3-linux-x64.tar.gz"
-else
+elif [ -z "$APIGEE_MICROGATEWAY_NODEJS_VERSION" ]; then # APIGEE_MICROGATEWAY_NODEJS_VERSION is not declared
+  echo "Fetch Node.js from $DEFAULT_NODEJS_URL"
+  wget_and_untar "$DEFAULT_NODEJS_URL" "$DEFAULT_NODEJS_FILENAME"
+else # APIGEE_MICROGATEWAY_NODEJS_VERSION is declared
   NODE_FILENAME="node-v$APIGEE_MICROGATEWAY_NODEJS_VERSION-linux-x64.tar.gz"
-  echo "Fetch Node.js from https://nodejs.org/dist/v$APIGEE_MICROGATEWAY_NODEJS_VERSION/$NODE_FILENAME"
-  wget_and_untar "https://nodejs.org/dist/v$APIGEE_MICROGATEWAY_NODEJS_VERSION/$NODE_FILENAME" "$NODE_FILENAME"
+  echo "Fetch Node.js from $NODEJS_PARTIAL_URL$APIGEE_MICROGATEWAY_NODEJS_VERSION/$NODE_FILENAME"
+  wget_and_untar "$NODEJS_PARTIAL_URL$APIGEE_MICROGATEWAY_NODEJS_VERSION/$NODE_FILENAME" "$NODE_FILENAME"
 fi
 
 export PATH=$PATH:${BUILD_DIR}/tmp/node/bin
