@@ -16,7 +16,7 @@ function check_file_mimetype {
   MIMETYPE=`file -b --mime-type $FILENAME`
   echo "$MIMETYPE"
   if [[ ${MIMETYPE} != *"gzip"* ]]; then
-    echo "The $FILENAME is not gzip. Please convert the file to gzip and try the request again." >&2
+    echo "The file named $FILENAME is not gzip. Please convert the file to gzip and try the request again." >&2
     exit 1
   fi
 }
@@ -47,9 +47,12 @@ function wget_and_untar
 # or the url is missing and the file name is present
 # or the url is present and the file name is missing
 function check_nodejs_filename_and_url {
-  echo "Checking APIGEE_MICROGATEWAY_NODEJS_FILENAME and APIGEE_MICROGATEWAY_NODEJS_URL environment variables."
-  if [ "$APIGEE_MICROGATEWAY_NODEJS_URL" != "" ] && [ "$APIGEE_MICROGATEWAY_NODEJS_FILENAME" != "" ]; then
-    echo "Either APIGEE_MICROGATEWAY_NODEJS_URL or APIGEE_MICROGATEWAY_NODEJS_FILENAME should be included, but you should not include both." >&2
+  echo "Checking APIGEE_MICROGATEWAY_NODEJS_VERSION, APIGEE_MICROGATEWAY_NODEJS_FILENAME and APIGEE_MICROGATEWAY_NODEJS_URL environment variables."
+  if [ "$APIGEE_MICROGATEWAY_NODEJS_VERSION" != "" ] && [ "$APIGEE_MICROGATEWAY_NODEJS_FILENAME" != "" ]; then
+    echo "Either APIGEE_MICROGATEWAY_NODEJS_VERSION or APIGEE_MICROGATEWAY_NODEJS_FILENAME should be included in manifest.yml, but you should not include both." >&2
+    exit 1
+  elif [ "$APIGEE_MICROGATEWAY_NODEJS_URL" != "" ] && [ "$APIGEE_MICROGATEWAY_NODEJS_FILENAME" != "" ]; then
+    echo "Either APIGEE_MICROGATEWAY_NODEJS_URL or APIGEE_MICROGATEWAY_NODEJS_FILENAME should be included in manifest.yml, but you should not include both." >&2
     exit 1
   elif [ "$APIGEE_MICROGATEWAY_NODEJS_URL" != "" ]; then
       NODE_FILENAME=$(basename "$APIGEE_MICROGATEWAY_NODEJS_URL")
@@ -57,15 +60,15 @@ function check_nodejs_filename_and_url {
         echo "$APIGEE_MICROGATEWAY_NODEJS_URL does not include a valid protocol (https or http)" >&2
         exit 1
       fi
-  elif [ "$APIGEE_MICROGATEWAY_NODEJS_FILENAME" != "" ]; then
-    if [ ! -f "$ROOT_DIR/lib/$APIGEE_MICROGATEWAY_NODEJS_FILENAME" ]; then
-      echo "APIGEE_MICROGATEWAY_NODEJS_LOCAL_INSTALL is set to true but APIGEE_MICROGATEWAY_NODEJS_FILENAME=$APIGEE_MICROGATEWAY_NODEJS_FILENAME and that file does not exist in the lib directory. Exiting..." >&2
+  elif [ "$APIGEE_MICROGATEWAY_NODEJS_FILENAME" != "" ]; then # is APIGEE_MICROGATEWAY_NODEJS_FILENAME set
+    if [ ! -f "$ROOT_DIR/lib/$APIGEE_MICROGATEWAY_NODEJS_FILENAME" ]; then # does the file exist
+      echo "The file $APIGEE_MICROGATEWAY_NODEJS_FILENAME does not exist in the lib directory." >&2
       exit 1
     else
-      check_file_mimetype $APIGEE_MICROGATEWAY_NODEJS_FILENAME
+      check_file_mimetype "$ROOT_DIR/lib/$APIGEE_MICROGATEWAY_NODEJS_FILENAME"
     fi
   fi
-  echo "APIGEE_MICROGATEWAY_NODEJS_FILENAME and APIGEE_MICROGATEWAY_NODEJS_URL environment variables are set correctly."
+  echo "APIGEE_MICROGATEWAY_NODEJS_VERSION, APIGEE_MICROGATEWAY_NODEJS_FILENAME and APIGEE_MICROGATEWAY_NODEJS_URL environment variables are set correctly."
 }
 
 mkdir -p $BUILD_DIR/tmp/node
