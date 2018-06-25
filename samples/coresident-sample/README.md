@@ -93,7 +93,6 @@ $ cp ~/.edgemicro/myorg-test-config.yaml .../cloud-foundry-apigee/samples/coresi
     env:
          # APIGEE_MICROGATEWAY_PROXY: edgemicro_cf-test.local.pcfdev.io
         APIGEE_MICROGATEWAY_CONFIG_DIR: config
-        APIGEE_MICROGATEWAY_NODEJS_LOCAL_INSTALL: true
         APIGEE_MICROGATEWAY_NODEJS_FILENAME: node-v6.11.3-linux-x64.tar.gz
         # APIGEE_MICROGATEWAY_PROCESSES: 2
         #  APIGEE_MICROGATEWAY_CUSTOM: | {...} --> uncomment if applicable
@@ -103,9 +102,7 @@ $ cp ~/.edgemicro/myorg-test-config.yaml .../cloud-foundry-apigee/samples/coresi
     env:
          # APIGEE_MICROGATEWAY_PROXY: edgemicro_cf-test.local.pcfdev.io
         APIGEE_MICROGATEWAY_CONFIG_DIR: config
-        APIGEE_MICROGATEWAY_NODEJS_URL: https://mycustomdomain.com/mynoderoot/versions
-        APIGEE_MICROGATEWAY_NODEJS_FILENAME: node-v6.11.3-linux-x64.tar.gz
-        # APIGEE_MICROGATEWAY_NODEJS_LOCAL_INSTALL: false
+        APIGEE_MICROGATEWAY_NODEJS_URL: https://mycustomdomain.com/mynoderoot/versions/node-v6.11.3-linux-x64.tar.gz
         # APIGEE_MICROGATEWAY_PROCESSES: 2
         #  APIGEE_MICROGATEWAY_CUSTOM: | {...} --> uncomment if applicable
     ```
@@ -115,7 +112,6 @@ $ cp ~/.edgemicro/myorg-test-config.yaml .../cloud-foundry-apigee/samples/coresi
          # APIGEE_MICROGATEWAY_PROXY: edgemicro_cf-test.local.pcfdev.io
         APIGEE_MICROGATEWAY_CONFIG_DIR: config
         APIGEE_MICROGATEWAY_NODEJS_VERSION: 6.11.3
-        # APIGEE_MICROGATEWAY_NODEJS_LOCAL_INSTALL: false
         # APIGEE_MICROGATEWAY_PROCESSES: 2
         #  APIGEE_MICROGATEWAY_CUSTOM: | {...} --> uncomment if applicable
     ```
@@ -124,7 +120,6 @@ $ cp ~/.edgemicro/myorg-test-config.yaml .../cloud-foundry-apigee/samples/coresi
     env:
          # APIGEE_MICROGATEWAY_PROXY: edgemicro_cf-test.local.pcfdev.io
         APIGEE_MICROGATEWAY_CONFIG_DIR: config
-        # APIGEE_MICROGATEWAY_NODEJS_LOCAL_INSTALL: false
         # APIGEE_MICROGATEWAY_PROCESSES: 2
         #  APIGEE_MICROGATEWAY_CUSTOM: | {...} --> uncomment if applicable
     ```
