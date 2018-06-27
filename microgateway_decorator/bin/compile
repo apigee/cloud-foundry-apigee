@@ -9,6 +9,18 @@ ENV_DIR=$3
 NODEJS_PARTIAL_URL="https://nodejs.org/dist/v"
 DEFAULT_NODEJS_URL="https://nodejs.org/dist/v8.11.3/node-v8.11.3-linux-x64.tar.gz"
 DEFAULT_NODEJS_FILENAME=$(basename "$DEFAULT_NODEJS_URL")
+EDGEMICRO_DEFAULT_VERSION="2.5.19"
+EDGEMICRO_REPO="https://github.com/apigee-internal/microgateway.git"
+
+function git_checkout {
+  MG_VERSION=$1
+  (cd $BUILD_DIR/tmp/edgemicro && git checkout tags/$MG_VERSION)
+  if [ $? -eq 0 ]; then
+    return 0
+  else
+    return 1;
+  fi
+}
 
 function check_file_mimetype {
   echo "Checking file mime-type."
@@ -100,23 +112,26 @@ if [ -d "$ROOT_DIR/lib/microgateway" ]; then
   cp -a $ROOT_DIR/lib/microgateway/. $BUILD_DIR/tmp/edgemicro
 else #clone from github
   echo "Cloning Edge Microgateway from Github."
-  git clone https://github.com/apigee-internal/microgateway.git $BUILD_DIR/tmp/edgemicro
+  git clone $EDGEMICRO_REPO $BUILD_DIR/tmp/edgemicro
 fi
 
 # the envrionment variable is not a zero length string
 if [ ! -z "$APIGEE_MICROGATEWAY_VERSION" ]; then
   echo "Trying git checkout tags/$APIGEE_MICROGATEWAY_VERSION"
-  CHECKOUT_RESULT=`(cd $BUILD_DIR/tmp/edgemicro && git checkout tags/$APIGEE_MICROGATEWAY_VERSION)`
+  #CHECKOUT_RESULT=`(cd $BUILD_DIR/tmp/edgemicro && git checkout tags/$APIGEE_MICROGATEWAY_VERSION)`
+  git_checkout $APIGEE_MICROGATEWAY_VERSION
   if [ $? -ne 0  ]; then # version not found then prepend v to tag
     echo "Trying git checkout tags/v$APIGEE_MICROGATEWAY_VERSION instead."
-    CHECKOUT_RESULT=`(cd $BUILD_DIR/tmp/edgemicro && git checkout tags/v$APIGEE_MICROGATEWAY_VERSION)`
+    # CHECKOUT_RESULT=`(cd $BUILD_DIR/tmp/edgemicro && git checkout tags/v$APIGEE_MICROGATEWAY_VERSION)`
+    git_checkout "v$APIGEE_MICROGATEWAY_VERSION"
     if [ $? -ne 0  ]; then # fail the compile step
       echo "The Edgemicro tag $APIGEE_MICROGATEWAY_VERSION does not exist." >&2
       exit 1
     fi
   fi
-else # using most current version of Edge Microgateway.
-  echo "Not executing git checkout; using most current version in git repository instead."
+else
+  echo "Using edgemicro version $EDGEMICRO_DEFAULT_VERSION."
+  git_checkout $EDGEMICRO_DEFAULT_VERSION
 fi
 
 npm --prefix $BUILD_DIR/tmp/edgemicro install

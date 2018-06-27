@@ -19,7 +19,6 @@ var fs = require('fs')
 var spawn = require('child_process').spawn
 var yaml = require('js-yaml')
 const os = require('os')
-const edgemicroDefaultVersion = "2.5.19";
 
 var run = function(){
     console.log("Starting Decorator")
