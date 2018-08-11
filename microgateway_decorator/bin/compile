@@ -7,7 +7,7 @@ BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
 NODEJS_PARTIAL_URL="https://nodejs.org/dist/v"
-DEFAULT_NODEJS_URL="https://nodejs.org/dist/v8.11.3/node-v8.11.3-linux-x64.tar.gz"
+DEFAULT_NODEJS_URL="https://nodejs.org/dist/v6.11.3/node-v6.11.3-linux-x64.tar.gz"
 DEFAULT_NODEJS_FILENAME=$(basename "$DEFAULT_NODEJS_URL")
 
 function check_file_mimetype {
@@ -61,11 +61,11 @@ function check_nodejs_filename_and_url {
         exit 1
       fi
   elif [ "$APIGEE_MICROGATEWAY_NODEJS_FILENAME" != "" ]; then # is APIGEE_MICROGATEWAY_NODEJS_FILENAME set
-    if [ ! -f "$ROOT_DIR/lib/$APIGEE_MICROGATEWAY_NODEJS_FILENAME" ]; then # does the file exist
-      echo "The file $APIGEE_MICROGATEWAY_NODEJS_FILENAME does not exist in the lib directory." >&2
+    if [ ! -f "$ROOT_DIR/lib/customer/$APIGEE_MICROGATEWAY_NODEJS_FILENAME" ]; then # does the file exist
+      echo "The file $APIGEE_MICROGATEWAY_NODEJS_FILENAME does not exist in the lib/customer directory." >&2
       exit 1
     else
-      check_file_mimetype "$ROOT_DIR/lib/$APIGEE_MICROGATEWAY_NODEJS_FILENAME"
+      check_file_mimetype "$ROOT_DIR/lib/customer/$APIGEE_MICROGATEWAY_NODEJS_FILENAME"
     fi
   fi
   echo "APIGEE_MICROGATEWAY_NODEJS_VERSION, APIGEE_MICROGATEWAY_NODEJS_FILENAME and APIGEE_MICROGATEWAY_NODEJS_URL environment variables are set correctly."
@@ -76,9 +76,9 @@ mkdir -p $BUILD_DIR/tmp/edgemicro
 
 check_nodejs_filename_and_url
 
-if [ -f "$ROOT_DIR/lib/$APIGEE_MICROGATEWAY_NODEJS_FILENAME" ]; then
+if [ -f "$ROOT_DIR/lib/customer/$APIGEE_MICROGATEWAY_NODEJS_FILENAME" ]; then
   echo "This is a local Node.js installation."
-  untar "$ROOT_DIR/lib/$APIGEE_MICROGATEWAY_NODEJS_FILENAME"
+  untar "$ROOT_DIR/lib/customer/$APIGEE_MICROGATEWAY_NODEJS_FILENAME"
 elif [ ! -z "$APIGEE_MICROGATEWAY_NODEJS_URL" ]; then # APIGEE_MICROGATEWAY_NODEJS_URL is declared
   echo "Fetch Node.js tar from $APIGEE_MICROGATEWAY_NODEJS_URL/$APIGEE_MICROGATEWAY_NODEJS_FILENAME"
   wget_and_untar "$APIGEE_MICROGATEWAY_NODEJS_URL/$APIGEE_MICROGATEWAY_NODEJS_FILENAME" "$APIGEE_MICROGATEWAY_NODEJS_FILENAME"
