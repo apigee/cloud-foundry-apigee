@@ -144,22 +144,22 @@ var configureMicro = function(micro_data, callback){
         }
 
         config_obj.edgemicro = config_obj.edgemicro ? config_obj.edgemicro : {}
-        
+
         var existing_seq = (config_obj.edgemicro.plugins && config_obj.edgemicro.plugins.sequence) ? config_obj.edgemicro.plugins.sequence : []
         var custom_seq = optional.APIGEE_MICROGATEWAY_CUSTOM.sequence ? optional.APIGEE_MICROGATEWAY_CUSTOM.sequence : []
-        
+
         config_obj.edgemicro.proxies = [micro_data.required.APIGEE_MICROGATEWAY_PROXY]
         config_obj.edgemicro.plugins = {
             dir: "../plugins",
             sequence: combineExisting(existing_seq, custom_seq)
         }
-        
+
         var policies = optional.APIGEE_MICROGATEWAY_CUSTOM.policies ? optional.APIGEE_MICROGATEWAY_CUSTOM.policies : {}
         Object.keys(policies).forEach(function(policy) {
             config_obj[policy] = policies[policy]
         })
-        
-        
+
+
         var new_yaml = yaml.safeDump(config_obj)
         fs.writeFile(config_file, new_yaml, function(err) {
             if(err) {
@@ -176,7 +176,7 @@ var configureMicro = function(micro_data, callback){
 var startMicro = function(micro_data, callback){
     var path_additions = [os.homedir() + "/tmp/node/bin", os.homedir() + "/tmp/edgemicro/cli"]
     process.env.PATH += ":" + path_additions.join(":")
-    
+
     console.log("Starting Apigee Microgateway...")
     // const edgemicro_args = ['start', '-o', micro_data.required.APIGEE_MICROGATEWAY_ORG, '-e', micro_data.required.APIGEE_MICROGATEWAY_ENV, '-k', micro_data.required.APIGEE_MICROGATEWAY_KEY, '-s', micro_data.required.APIGEE_MICROGATEWAY_SECRET, '-c', micro_data.required.APIGEE_MICROGATEWAY_CONFIG_DIR]
     // const start = spawn("edgemicro", edgemicro_args)
@@ -189,7 +189,7 @@ var startMicro = function(micro_data, callback){
     if (micro_data.optional.hasOwnProperty("APIGEE_MICROGATEWAY_PROCESSES").length > 0){
         process.env.EDGEMICRO_PROCESSES = micro_data.optional.APIGEE_MICROGATEWAY_PROCESSES
     }
-    
+
 
     const start = spawn("node", [os.homedir() + "/tmp/edgemicro/app.js"])
 
