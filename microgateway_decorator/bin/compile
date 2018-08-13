@@ -9,12 +9,12 @@ ENV_DIR=$3
 NODEJS_PARTIAL_URL="https://nodejs.org/dist/v"
 DEFAULT_NODEJS_URL="https://nodejs.org/dist/v6.11.3/node-v6.11.3-linux-x64.tar.gz"
 DEFAULT_NODEJS_FILENAME=$(basename "$DEFAULT_NODEJS_URL")
-EDGEMICRO_DEFAULT_VERSION="2.5.19"
+EDGEMICRO_DEFAULT_VERSION="v2.5.8"
 EDGEMICRO_REPO="https://github.com/apigee-internal/microgateway.git"
 
 function git_checkout {
   MG_VERSION=$1
-  (cd $BUILD_DIR/tmp/edgemicro && git checkout tags/$MG_VERSION)
+  (cd $BUILD_DIR/tmp/edgemicro && git checkout -f tags/$MG_VERSION)
   if [ $? -eq 0 ]; then
     return 0
   else
@@ -106,10 +106,10 @@ fi
 export PATH=$PATH:${BUILD_DIR}/tmp/node/bin
 # npm --prefix $BUILD_DIR/tmp/edgemicro install edgemicro
 
-# local installation if microgateway folder exists in lib directory
-if [ -d "$ROOT_DIR/lib/microgateway" ]; then
+# local installation if microgateway folder exists in lib/customer directory
+if [ -d "$ROOT_DIR/lib/customer/microgateway" ]; then
   echo "Installing Edge Microgateway from lib directory."
-  cp -a $ROOT_DIR/lib/microgateway/. $BUILD_DIR/tmp/edgemicro
+  cp -a $ROOT_DIR/lib/customer/microgateway/. $BUILD_DIR/tmp/edgemicro
 else #clone from github
   echo "Cloning Edge Microgateway from Github."
   git clone $EDGEMICRO_REPO $BUILD_DIR/tmp/edgemicro
