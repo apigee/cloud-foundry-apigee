@@ -12,12 +12,12 @@ Throughout these instructions you will see `org = myorg` and `env = test` as wel
     '{"org":"myorg", "env":"test"}'
   ```
 
-## Step 2 - Configure Edmgemicro:
+## Step 2 - Configure Edgemicro:
   * Make sure Node is installed
   ```
   $ node -v
   ```
-  * Install Edgmicro:
+  * Install Edgemicro:
   ```
   $ npm install edgemicro -g
   ```
@@ -38,7 +38,7 @@ Throughout these instructions you will see `org = myorg` and `env = test` as wel
 $ mkdir .../cloud-foundry-apigee/samples/coresident-sample/config
 $ cp ~/.edgemicro/myorg-test-config.yaml .../cloud-foundry-apigee/samples/coresident-sample/config
 ```
-* If you want to use the provided custom plugin with ouath, you can follow one of two steps:
+* If you want to use the provided custom plugin with oauth, you can follow one of two steps:
   1. Edit the application manifest to include the `APIGEE_MICROGATEWAY_CUSTOM` environment variable:
       ```yaml
       env:
@@ -57,7 +57,7 @@ $ cp ~/.edgemicro/myorg-test-config.yaml .../cloud-foundry-apigee/samples/coresi
                                     "sequence": ["oauth", "response-override"]
                                     }
       ```
-  1. Configure the microgateway yaml file from step 2 to include the "response-override" plugin:
+  2. Configure the microgateway yaml file from step 2 to include the "response-override" plugin:
       ```yaml
       ...
       plugins:
@@ -88,7 +88,7 @@ $ cp ~/.edgemicro/myorg-test-config.yaml .../cloud-foundry-apigee/samples/coresi
         # APIGEE_MICROGATEWAY_PROCESSES: 2
         #  APIGEE_MICROGATEWAY_CUSTOM: | {...} --> uncomment if applicable
     ```
-    * If you are including the Node.js tar in the `lib` directory:
+    * If you are including the Node.js tar.gz in the `lib/customer` directory (you must create the `customer` folder in the lib directory if it does not exist):
     ```yaml
     env:
          # APIGEE_MICROGATEWAY_PROXY: edgemicro_cf-test.local.pcfdev.io
@@ -97,12 +97,12 @@ $ cp ~/.edgemicro/myorg-test-config.yaml .../cloud-foundry-apigee/samples/coresi
         # APIGEE_MICROGATEWAY_PROCESSES: 2
         #  APIGEE_MICROGATEWAY_CUSTOM: | {...} --> uncomment if applicable
     ```
-    * If you want to use a Node.js tar from a location accessible via http or https other than https://nodejs.org:
+    * If you want to use a Node.js tar.gz from a location accessible via http or https other than https://nodejs.org:
     ```yaml
     env:
          # APIGEE_MICROGATEWAY_PROXY: edgemicro_cf-test.local.pcfdev.io
         APIGEE_MICROGATEWAY_CONFIG_DIR: config
-        APIGEE_MICROGATEWAY_NODEJS_URL: https://mycustomdomain.com/mynoderoot/versions/node-v6.11.3-linux-x64.tar.gz
+        APIGEE_MICROGATEWAY_NODEJS_URL: https://mycustomdomain.com/mynoderoot/versions/node-v8.11.3-linux-x64.tar.gz
         # APIGEE_MICROGATEWAY_PROCESSES: 2
         #  APIGEE_MICROGATEWAY_CUSTOM: | {...} --> uncomment if applicable
     ```
@@ -111,11 +111,11 @@ $ cp ~/.edgemicro/myorg-test-config.yaml .../cloud-foundry-apigee/samples/coresi
     env:
          # APIGEE_MICROGATEWAY_PROXY: edgemicro_cf-test.local.pcfdev.io
         APIGEE_MICROGATEWAY_CONFIG_DIR: config
-        APIGEE_MICROGATEWAY_NODEJS_VERSION: 6.11.3
+        APIGEE_MICROGATEWAY_NODEJS_VERSION: 8.11.3
         # APIGEE_MICROGATEWAY_PROCESSES: 2
         #  APIGEE_MICROGATEWAY_CUSTOM: | {...} --> uncomment if applicable
     ```
-    * If you want to use the default Node.js version of 8.11.3 from https://nodejs.org:
+    * If you want to use the default Node.js version of 6.11.3 from https://nodejs.org:
     ```yaml
     env:
          # APIGEE_MICROGATEWAY_PROXY: edgemicro_cf-test.local.pcfdev.io
