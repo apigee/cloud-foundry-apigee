@@ -6,17 +6,134 @@ ROOT_DIR=$(dirname $BIN_DIR)
 BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
+NODEJS_PARTIAL_URL="https://nodejs.org/dist/v"
+DEFAULT_NODEJS_URL="https://nodejs.org/dist/v6.11.3/node-v6.11.3-linux-x64.tar.gz"
+DEFAULT_NODEJS_FILENAME=$(basename "$DEFAULT_NODEJS_URL")
+EDGEMICRO_DEFAULT_VERSION="v2.5.8"
+EDGEMICRO_REPO="https://github.com/apigee-internal/microgateway.git"
+
+function git_checkout {
+  MG_VERSION=$1
+  (cd $BUILD_DIR/tmp/edgemicro && git checkout -f tags/$MG_VERSION)
+  if [ $? -eq 0 ]; then
+    return 0
+  else
+    return 1;
+  fi
+}
+
+function check_file_mimetype {
+  echo "Checking file mime-type."
+  FILENAME=$1
+  MIMETYPE=`file -b --mime-type $FILENAME`
+  echo "$MIMETYPE"
+  if [[ ${MIMETYPE} != *"gzip"* ]]; then
+    echo "The file named $FILENAME is not gzip. Please convert the file to gzip and try the request again." >&2
+    exit 1
+  fi
+}
+
+function untar
+{
+  echo "untar"
+  NODEJS_FILENAME=$1
+  tar --touch --strip-components 1 -xzf $NODEJS_FILENAME -C $BUILD_DIR/tmp/node
+}
+
+function wget_and_untar
+{
+  NODE_WGET=$1
+  NODEJS_FILENAME=$2
+  wget_output=$(wget --tries=1 --timeout=5 --quiet "$NODE_WGET")
+  if [ $? -ne 0 ]; then
+    echo "Node.js was not downloaded successfully from $NODE_WGET." >&2
+    exit 1
+  fi
+  check_file_mimetype $NODEJS_FILENAME
+  untar $NODEJS_FILENAME
+  rm $NODEJS_FILENAME
+}
+
+# checks various combinations of the filename and the url and displays an error message
+# if the URL is valid protocol (http:// or https://)
+# or the url is missing and the file name is present
+# or the url is present and the file name is missing
+function check_nodejs_filename_and_url {
+  echo "Checking APIGEE_MICROGATEWAY_NODEJS_VERSION, APIGEE_MICROGATEWAY_NODEJS_FILENAME and APIGEE_MICROGATEWAY_NODEJS_URL environment variables."
+  if [ "$APIGEE_MICROGATEWAY_NODEJS_VERSION" != "" ] && [ "$APIGEE_MICROGATEWAY_NODEJS_FILENAME" != "" ]; then
+    echo "Either APIGEE_MICROGATEWAY_NODEJS_VERSION or APIGEE_MICROGATEWAY_NODEJS_FILENAME should be included in manifest.yml, but you should not include both." >&2
+    exit 1
+  elif [ "$APIGEE_MICROGATEWAY_NODEJS_URL" != "" ] && [ "$APIGEE_MICROGATEWAY_NODEJS_FILENAME" != "" ]; then
+    echo "Either APIGEE_MICROGATEWAY_NODEJS_URL or APIGEE_MICROGATEWAY_NODEJS_FILENAME should be included in manifest.yml, but you should not include both." >&2
+    exit 1
+  elif [ "$APIGEE_MICROGATEWAY_NODEJS_URL" != "" ]; then
+      NODE_FILENAME=$(basename "$APIGEE_MICROGATEWAY_NODEJS_URL")
+      if ! grep -q "http://" <<< "$APIGEE_MICROGATEWAY_NODEJS_URL" && ! grep -q "https://" <<< "$APIGEE_MICROGATEWAY_NODEJS_URL" ; then
+        echo "$APIGEE_MICROGATEWAY_NODEJS_URL does not include a valid protocol (https or http)" >&2
+        exit 1
+      fi
+  elif [ "$APIGEE_MICROGATEWAY_NODEJS_FILENAME" != "" ]; then # is APIGEE_MICROGATEWAY_NODEJS_FILENAME set
+    if [ ! -f "$ROOT_DIR/lib/customer/$APIGEE_MICROGATEWAY_NODEJS_FILENAME" ]; then # does the file exist
+      echo "The file $APIGEE_MICROGATEWAY_NODEJS_FILENAME does not exist in the lib/customer directory." >&2
+      exit 1
+    else
+      check_file_mimetype "$ROOT_DIR/lib/customer/$APIGEE_MICROGATEWAY_NODEJS_FILENAME"
+    fi
+  fi
+  echo "APIGEE_MICROGATEWAY_NODEJS_VERSION, APIGEE_MICROGATEWAY_NODEJS_FILENAME and APIGEE_MICROGATEWAY_NODEJS_URL environment variables are set correctly."
+}
 
 mkdir -p $BUILD_DIR/tmp/node
 mkdir -p $BUILD_DIR/tmp/edgemicro
 
-wget --quiet https://nodejs.org/dist/v6.11.3/node-v6.11.3-linux-x64.tar.gz
-tar --touch --strip-components 1 -xzf node-v6.11.3-linux-x64.tar.gz -C $BUILD_DIR/tmp/node
-rm node-v6.11.3-linux-x64.tar.gz
+check_nodejs_filename_and_url
+
+if [ -f "$ROOT_DIR/lib/customer/$APIGEE_MICROGATEWAY_NODEJS_FILENAME" ]; then
+  echo "This is a local Node.js installation."
+  untar "$ROOT_DIR/lib/customer/$APIGEE_MICROGATEWAY_NODEJS_FILENAME"
+elif [ ! -z "$APIGEE_MICROGATEWAY_NODEJS_URL" ]; then # APIGEE_MICROGATEWAY_NODEJS_URL is declared
+  echo "Fetch Node.js tar from $APIGEE_MICROGATEWAY_NODEJS_URL/$APIGEE_MICROGATEWAY_NODEJS_FILENAME"
+  wget_and_untar "$APIGEE_MICROGATEWAY_NODEJS_URL/$APIGEE_MICROGATEWAY_NODEJS_FILENAME" "$APIGEE_MICROGATEWAY_NODEJS_FILENAME"
+elif [ -z "$APIGEE_MICROGATEWAY_NODEJS_VERSION" ]; then # APIGEE_MICROGATEWAY_NODEJS_VERSION is not declared
+  echo "Fetch Node.js from $DEFAULT_NODEJS_URL"
+  wget_and_untar "$DEFAULT_NODEJS_URL" "$DEFAULT_NODEJS_FILENAME"
+else # APIGEE_MICROGATEWAY_NODEJS_VERSION is declared
+  NODE_FILENAME="node-v$APIGEE_MICROGATEWAY_NODEJS_VERSION-linux-x64.tar.gz"
+  echo "Fetch Node.js from $NODEJS_PARTIAL_URL$APIGEE_MICROGATEWAY_NODEJS_VERSION/$NODE_FILENAME"
+  wget_and_untar "$NODEJS_PARTIAL_URL$APIGEE_MICROGATEWAY_NODEJS_VERSION/$NODE_FILENAME" "$NODE_FILENAME"
+fi
+
 export PATH=$PATH:${BUILD_DIR}/tmp/node/bin
 # npm --prefix $BUILD_DIR/tmp/edgemicro install edgemicro
-git clone https://github.com/apigee-internal/microgateway.git $BUILD_DIR/tmp/edgemicro
-(cd $BUILD_DIR/tmp/edgemicro && git checkout tags/v2.5.8)
+
+# local installation if microgateway folder exists in lib/customer directory
+if [ -d "$ROOT_DIR/lib/customer/microgateway" ]; then
+  echo "Installing Edge Microgateway from lib directory."
+  cp -a $ROOT_DIR/lib/customer/microgateway/. $BUILD_DIR/tmp/edgemicro
+else #clone from github
+  echo "Cloning Edge Microgateway from Github."
+  git clone $EDGEMICRO_REPO $BUILD_DIR/tmp/edgemicro
+fi
+
+# the envrionment variable is not a zero length string
+if [ ! -z "$APIGEE_MICROGATEWAY_VERSION" ]; then
+  echo "Trying git checkout tags/$APIGEE_MICROGATEWAY_VERSION"
+  #CHECKOUT_RESULT=`(cd $BUILD_DIR/tmp/edgemicro && git checkout tags/$APIGEE_MICROGATEWAY_VERSION)`
+  git_checkout $APIGEE_MICROGATEWAY_VERSION
+  if [ $? -ne 0  ]; then # version not found then prepend v to tag
+    echo "Trying git checkout tags/v$APIGEE_MICROGATEWAY_VERSION instead."
+    # CHECKOUT_RESULT=`(cd $BUILD_DIR/tmp/edgemicro && git checkout tags/v$APIGEE_MICROGATEWAY_VERSION)`
+    git_checkout "v$APIGEE_MICROGATEWAY_VERSION"
+    if [ $? -ne 0  ]; then # fail the compile step
+      echo "The Edgemicro tag $APIGEE_MICROGATEWAY_VERSION does not exist." >&2
+      exit 1
+    fi
+  fi
+else
+  echo "Using edgemicro version $EDGEMICRO_DEFAULT_VERSION."
+  git_checkout $EDGEMICRO_DEFAULT_VERSION
+fi
+
 npm --prefix $BUILD_DIR/tmp/edgemicro install
 
 mkdir -p $BUILD_DIR/microgateway

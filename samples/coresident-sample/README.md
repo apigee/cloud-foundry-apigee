@@ -12,12 +12,12 @@ Throughout these instructions you will see `org = myorg` and `env = test` as wel
     '{"org":"myorg", "env":"test"}'
   ```
 
-## Step 2 - Configure Edmgemicro:
+## Step 2 - Configure Edgemicro:
   * Make sure Node is installed
   ```
   $ node -v
   ```
-  * Install Edgmicro:
+  * Install Edgemicro:
   ```
   $ npm install edgemicro -g
   ```
@@ -38,7 +38,7 @@ Throughout these instructions you will see `org = myorg` and `env = test` as wel
 $ mkdir .../cloud-foundry-apigee/samples/coresident-sample/config
 $ cp ~/.edgemicro/myorg-test-config.yaml .../cloud-foundry-apigee/samples/coresident-sample/config
 ```
-* If you want to use the provided custom plugin with ouath, you can follow one of two steps:
+* If you want to use the provided custom plugin with oauth, you can follow one of two steps:
   1. Edit the application manifest to include the `APIGEE_MICROGATEWAY_CUSTOM` environment variable:
       ```yaml
       env:
@@ -49,15 +49,15 @@ $ cp ~/.edgemicro/myorg-test-config.yaml .../cloud-foundry-apigee/samples/coresi
                                       {
                                       "oauth":
                                         {
-                                          "allowNoAuthorization": false, 
+                                          "allowNoAuthorization": false,
                                           "allowInvalidAuthorization": false,
                                           "verify_api_key_url": "https://myorg-test.apigee.net/edgemicro-auth/verifyApiKey"
                                         }
                                       },
                                     "sequence": ["oauth", "response-override"]
                                     }
-      ``` 
-  1. Configure the microgateway yaml file from step 2 to include the "response-override" plugin:
+      ```
+  2. Configure the microgateway yaml file from step 2 to include the "response-override" plugin:
       ```yaml
       ...
       plugins:
@@ -88,6 +88,63 @@ $ cp ~/.edgemicro/myorg-test-config.yaml .../cloud-foundry-apigee/samples/coresi
         # APIGEE_MICROGATEWAY_PROCESSES: 2
         #  APIGEE_MICROGATEWAY_CUSTOM: | {...} --> uncomment if applicable
     ```
+    * If you are including the Node.js tar.gz in the `lib/customer` directory (you must create the `customer` folder in the lib directory if it does not exist):
+    ```yaml
+    env:
+         # APIGEE_MICROGATEWAY_PROXY: edgemicro_cf-test.local.pcfdev.io
+        APIGEE_MICROGATEWAY_CONFIG_DIR: config
+        APIGEE_MICROGATEWAY_NODEJS_FILENAME: node-v6.11.3-linux-x64.tar.gz
+        # APIGEE_MICROGATEWAY_PROCESSES: 2
+        #  APIGEE_MICROGATEWAY_CUSTOM: | {...} --> uncomment if applicable
+    ```
+    * If you want to use a Node.js tar.gz from a location accessible via http or https other than https://nodejs.org:
+    ```yaml
+    env:
+         # APIGEE_MICROGATEWAY_PROXY: edgemicro_cf-test.local.pcfdev.io
+        APIGEE_MICROGATEWAY_CONFIG_DIR: config
+        APIGEE_MICROGATEWAY_NODEJS_URL: https://mycustomdomain.com/mynoderoot/versions/node-v8.11.3-linux-x64.tar.gz
+        # APIGEE_MICROGATEWAY_PROCESSES: 2
+        #  APIGEE_MICROGATEWAY_CUSTOM: | {...} --> uncomment if applicable
+    ```
+    * If you want to select a specific Node.js version from https://nodejs.org:
+    ```yaml
+    env:
+         # APIGEE_MICROGATEWAY_PROXY: edgemicro_cf-test.local.pcfdev.io
+        APIGEE_MICROGATEWAY_CONFIG_DIR: config
+        APIGEE_MICROGATEWAY_NODEJS_VERSION: 8.11.3
+        # APIGEE_MICROGATEWAY_PROCESSES: 2
+        #  APIGEE_MICROGATEWAY_CUSTOM: | {...} --> uncomment if applicable
+    ```
+    * If you want to use the default Node.js version of 6.11.3 from https://nodejs.org:
+    ```yaml
+    env:
+         # APIGEE_MICROGATEWAY_PROXY: edgemicro_cf-test.local.pcfdev.io
+        APIGEE_MICROGATEWAY_CONFIG_DIR: config
+        # APIGEE_MICROGATEWAY_PROCESSES: 2
+        #  APIGEE_MICROGATEWAY_CUSTOM: | {...} --> uncomment if applicable
+    ```
+    * If you don't include `APIGEE_MICROGATEWAY_VERSION`, then it will use the 2.5.8 version in the Github repository.
+    * If you want to use specific version of Edge Microgateway, then include this environment variable.  This will execute a git clone on the https://github.com/apigee-internal/microgateway repository.
+    ```yaml
+    env:
+        # APIGEE_MICROGATEWAY_PROXY: edgemicro_cf-test.local.pcfdev.io
+        APIGEE_MICROGATEWAY_VERSION: 2.5.19
+        APIGEE_MICROGATEWAY_CONFIG_DIR: config
+        # APIGEE_MICROGATEWAY_NODEJS_LOCAL_INSTALL: false
+        # APIGEE_MICROGATEWAY_PROCESSES: 2
+        #  APIGEE_MICROGATEWAY_CUSTOM: | {...} --> uncomment if applicable
+    ```
+    * If you want to use specific version of Edge Microgateway installed from the decorator, then clone the repository into the `lib/customer` directory which is located in the `microgateway_decorator` folder.  In this case, the decorator will use the locally cloned repository instead of cloning from github.com.
+    ```yaml
+    env:
+        # APIGEE_MICROGATEWAY_PROXY: edgemicro_cf-test.local.pcfdev.io
+        APIGEE_MICROGATEWAY_VERSION: 2.5.19
+        APIGEE_MICROGATEWAY_CONFIG_DIR: config
+        # APIGEE_MICROGATEWAY_NODEJS_LOCAL_INSTALL: false
+        # APIGEE_MICROGATEWAY_PROCESSES: 2
+        #  APIGEE_MICROGATEWAY_CUSTOM: | {...} --> uncomment if applicable
+    ```
+
 
 ## Step 3: Install the Plugin:
 
@@ -136,12 +193,12 @@ $ cp ~/.edgemicro/myorg-test-config.yaml .../cloud-foundry-apigee/samples/coresi
 	Path to the configuration directory with Microgateway .yaml file | Location of your Apigee Microgateway configuration directory.
 	Path to the configuration directory with custom plugins | Location of your Apigee Microgateway plugins directory.
 
-Now, you bind a Cloud Foundry app to the Apigee service instance you 
+Now, you bind a Cloud Foundry app to the Apigee service instance you
 created. The `apigee-bind-mgc` command creates the proxy for you and binds the app to the service. Certain information (such as the Apigee Microgateway key and secret and chosen plan ID) will be shared with the target application.  
 
-Each bind attempt requires authorization with Apigee Edge, with credentials 
-passed as additional parameters to the `apigee-bind-mgc` command. You can pass 
-these credentials as arguments of the `apigee-bind-mgc` command or by using a 
+Each bind attempt requires authorization with Apigee Edge, with credentials
+passed as additional parameters to the `apigee-bind-mgc` command. You can pass
+these credentials as arguments of the `apigee-bind-mgc` command or by using a
 bearer token.
 
 1. First, get the URL of the app to bind. `cf routes` lists the host and domain separately; `cf apps` combines them into a FQDN, listed under "urls". For example, if the app's hostname is `test-app`, then the resulting FQDN is `test-app.local.pcfdev.io`.
@@ -150,11 +207,11 @@ bearer token.
     $ cf routes
     ```
 
-1. If you're using a bearer token to authenticate with Apigee Edge, get or 
-   update the token using the Apigee SSO CLI script. (If you're instead using 
-   command-line arguments to authenticate with username and password, specify 
+1. If you're using a bearer token to authenticate with Apigee Edge, get or
+   update the token using the Apigee SSO CLI script. (If you're instead using
+   command-line arguments to authenticate with username and password, specify
    the credentials in the next step.)
-   
+
     ```bash
     $ get_token
     ```
@@ -163,14 +220,14 @@ bearer token.
 
 1. Bind the app to the Apigee service instance with the apigee-bind-mgc command.
 
-    > Use the command without arguments to be prompted for argument values. To use  the command with arguments, see the command reference at the end of this  topic. For help on the command, type `cf apigee-bind-mgc -h`. 
-	
+    > Use the command without arguments to be prompted for argument values. To use  the command with arguments, see the command reference at the end of this  topic. For help on the command, type `cf apigee-bind-mgc -h`.
+
 	```
 	cf apigee-bind-mgc
 	```
 
     > You'll be prompted for the following:
-	
+
     Argument  | Description
 	--- | ---
 	Apigee username | Apigee user name. Not used if you pass a bearer token with the --bearer argument.
@@ -184,9 +241,9 @@ bearer token.
 	Service instance name to bind to | Required. Name of the Apigee service to bind to.
 	Target application port | Required. Port for your Cloud Foundry app. This may not be 8080 nor the PORT environment variable.
 	Target application route | Required. The URL for your Cloud Foundry app. This will be the suffix of the proxy created for you through the bind command
-	
+
 	> The command creates an API proxy on the specified Apigee org and environment, then binds the Apigee service to the target app. To do its work, this command authenticates with Apigee Edge using the credentials you specified. You'll be prompted to start the app. If you don't and want to start it later you can start the Cloud Foundry app and microgateway-decorator along with it.
-	
+
 	```
 	cf start APP_NAME
 	```
