@@ -1,25 +1,29 @@
 ---
 applications:
-- name: sample-co
+- name: sample
   memory: 1G
   instances: 1
-  host: sample-co
-  health-check-type: http
-  health-check-http-endpoint: /healthcheck
+  host: sample
   path: .
   env:
-    #APIGEE_MICROGATEWAY_PROXY: edgemicro_cf-test.local.pcfdev.io
-    #APIGEE_MICROGATEWAY_CUST_PLUGINS: plugins
-    #APIGEE_MICROGATEWAY_PROCESSES: 2
+    # APIGEE_MICROGATEWAY_PROXY: edgemicro_cf-test.local.pcfdev.io
     APIGEE_MICROGATEWAY_CONFIG_DIR: config
+    # APIGEE_MICROGATEWAY_CUST_PLUGINS: plugins
+    # APIGEE_MICROGATEWAY_PROCESSES: 2
     APIGEE_MICROGATEWAY_CUSTOM: |
                                 {"policies":
                                   {
+                                  "oauth":
+                                    {
+                                      "allowNoAuthorization": true, 
+                                      "allowInvalidAuthorization": true,
+                                      "verify_api_key_url": "https://amer-demo5-test.apigee.net/edgemicro-auth/verifyApiKey"
+                                    },
                                   "spikearrest":
                                     {
                                       "allow": 10,
                                       "timeUnit": "minute"
                                     }
                                   },
-                                "sequence": ["healthcheck","spikearrest"]
+                                "sequence": ["oauth", "spikearrest"]
                                 }

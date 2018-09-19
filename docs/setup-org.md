@@ -44,6 +44,8 @@ These instructions assume a local [PCF Dev](https://pivotal.io/pcf-dev) environm
     ORG | The Apigee Edge organization with proxies that will handle calls to your app. |
     ENV | The Apigee Edge environment that with proxies that will handle calls to your app. |
 
+    If you've got an HTTP(S) proxy server, you can also specify the server's URL, as shown in the example here.
+
    > **Note:** Cloud Foundry does not allow ``${...}`` syntax to be present in the environment variable section. So when changing `APIGEE_PROXY_HOST_TEMPLATE` or `APIGEE_PROXY_NAME_TEMPLATE`, be sure to not use ``${...}`` in your changes.
 
     ```yaml
@@ -53,6 +55,8 @@ These instructions assume a local [PCF Dev](https://pivotal.io/pcf-dev) environm
                             “env”:”your-apigee-env1”,
                             “apigee_proxy_domain”:”apigee.net”,...},
                             <repeat the preceding for multiple orgs and envs>]
+        HTTP_PROXY:”your HTTP proxy server URL”
+        HTTPS_PROXY:”your HTTPS proxy server URL”
     ```
 
 1. Log in to the Cloud Foundry instance where you'll be installing the Apigee service broker.
@@ -217,7 +221,6 @@ Parameter | Purpose | Allowed Values
 `pass` | Apigee password. Not used if you pass a bearer token with the --bearer argument. | Your password.
 `protocol` | The protocol through which the proxy should be accessed by Cloud Foundry | `http` or `https`; default is `https`.
 `service` | Required. Name of the Apigee service to bind to. | The service name.
-`target_app_route` | The URL for your Cloud Foundry app. | The app URL.
 `user` | Apigee user name. Not used if you pass a bearer token with the --bearer argument. | Your user name.
 
 ## Unbinding the route service
