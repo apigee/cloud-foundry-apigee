@@ -306,8 +306,12 @@ router.put('/:instance_id/service_bindings/:binding_id',
     if (err) {
       res.status(err.statusCode || 500).json(err)
     } else {
-      var r = {credentials: result.credentials, route_service_url: result.proxyURL}
-      log.info(r.route_service_url)
+      var r = {credentials: result.credentials}
+      // don't return a route_service_url on a cf bind-service
+      if (bindReq.plan_id !== catalogData.guid.micro_coresident) {
+        r.route_service_url = result.proxyURL
+        log.info(r.route_service_url)
+      }
       res.status(201).json(r)
     }
   })

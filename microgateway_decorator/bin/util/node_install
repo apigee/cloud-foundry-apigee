@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+
+# Copyright 2018 Google LLC
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     https://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# This script installs and sets up node
+
+set -e
+
+NODEJS_PARTIAL_URL="https://nodejs.org/dist/v"
+DEFAULT_NODEJS_URL="https://nodejs.org/dist/v8.11.3/node-v8.11.3-linux-x64.tar.gz"
+DEFAULT_NODEJS_FILENAME=$(basename "$DEFAULT_NODEJS_URL")
+
+BUILDPACK_DIR=$1
+NODE_DIR=$2
+
+function check_file_mimetype {
+  echo "Checking file mime-type."
+  FILENAME=$1
+  MIMETYPE=`file -b --mime-type $FILENAME`
+  echo "$MIMETYPE"
+  if [[ ${MIMETYPE} != *"gzip"* ]]; then
+    echo "The file named $FILENAME is not gzip. Please convert the file to gzip and try the request again." >&2
+    exit 1
+  fi
+}
+
+function untar
+{
+  echo "untar"
+  NODEJS_FILENAME=$1
+  tar -m --strip-components 1 -xzf $NODEJS_FILENAME -C $NODE_DIR
+}
+
+function wget_and_untar
+{
+  NODE_WGET=$1
+  NODEJS_FILENAME=$(basename $NODE_WGET)
+  wget --tries=1 --timeout=5 --quiet "$NODE_WGET"
+  if [ $? -ne 0 ]; then
+    echo "Node.js was not downloaded successfully from $NODE_WGET." >&2
+    exit 1
+  fi
+  check_file_mimetype $NODEJS_FILENAME
+  untar $NODEJS_FILENAME
+  rm $NODEJS_FILENAME
+}
+
+# checks various combinations of the filename and the url and displays an error message
+# if the URL is valid protocol (http:// or https://)
+# or the url is missing and the file name is present
+# or the url is present and the file name is missing
+function check_nodejs_filename_and_url {
+  echo "Checking APIGEE_MICROGATEWAY_NODEJS_VERSION, APIGEE_MICROGATEWAY_NODEJS_FILENAME and APIGEE_MICROGATEWAY_NODEJS_URL environment variables."
+  if [ "$APIGEE_MICROGATEWAY_NODEJS_VERSION" != "" ] && [ "$APIGEE_MICROGATEWAY_NODEJS_FILENAME" != "" ]; then
+    echo "Either APIGEE_MICROGATEWAY_NODEJS_VERSION or APIGEE_MICROGATEWAY_NODEJS_FILENAME should be included in manifest.yml, but you should not include both." >&2
+    exit 1
+  elif [ "$APIGEE_MICROGATEWAY_NODEJS_URL" != "" ] && [ "$APIGEE_MICROGATEWAY_NODEJS_FILENAME" != "" ]; then
+    echo "Either APIGEE_MICROGATEWAY_NODEJS_URL or APIGEE_MICROGATEWAY_NODEJS_FILENAME should be included in manifest.yml, but you should not include both." >&2
+    exit 1
+  elif [ "$APIGEE_MICROGATEWAY_NODEJS_URL" != "" ]; then
+      NODE_FILENAME=$(basename "$APIGEE_MICROGATEWAY_NODEJS_URL")
+      if ! grep -q "http://" <<< "$APIGEE_MICROGATEWAY_NODEJS_URL" && ! grep -q "https://" <<< "$APIGEE_MICROGATEWAY_NODEJS_URL" ; then
+        echo "$APIGEE_MICROGATEWAY_NODEJS_URL does not include a valid protocol (https or http)" >&2
+        exit 1
+      fi
+  elif [ "$APIGEE_MICROGATEWAY_NODEJS_FILENAME" != "" ]; then # is APIGEE_MICROGATEWAY_NODEJS_FILENAME set
+    if [ ! -f "$BUILDPACK_DIR/lib/$APIGEE_MICROGATEWAY_NODEJS_FILENAME" ]; then # does the file exist
+      echo "The file $APIGEE_MICROGATEWAY_NODEJS_FILENAME does not exist in the lib directory." >&2
+      exit 1
+    else
+      check_file_mimetype "$BUILDPACK_DIR/lib/$APIGEE_MICROGATEWAY_NODEJS_FILENAME"
+    fi
+  fi
+  echo "APIGEE_MICROGATEWAY_NODEJS_VERSION, APIGEE_MICROGATEWAY_NODEJS_FILENAME and APIGEE_MICROGATEWAY_NODEJS_URL environment variables are set correctly."
+}
+
+check_nodejs_filename_and_url
+
+if [ -f "$BUILDPACK_DIR/lib/$APIGEE_MICROGATEWAY_NODEJS_FILENAME" ]; then
+  echo "This is a local Node.js installation."
+  untar "$BUILDPACK_DIR/lib/$APIGEE_MICROGATEWAY_NODEJS_FILENAME"
+elif [ ! -z "$APIGEE_MICROGATEWAY_NODEJS_URL" ]; then # APIGEE_MICROGATEWAY_NODEJS_URL is declared
+  echo "Fetch Node.js tar from $APIGEE_MICROGATEWAY_NODEJS_URL"
+  wget_and_untar "$APIGEE_MICROGATEWAY_NODEJS_URL"
+elif [ -z "$APIGEE_MICROGATEWAY_NODEJS_VERSION" ]; then # APIGEE_MICROGATEWAY_NODEJS_VERSION is not declared
+  echo "Fetch Node.js from $DEFAULT_NODEJS_URL"
+  wget_and_untar "$DEFAULT_NODEJS_URL" "$DEFAULT_NODEJS_FILENAME"
+else # APIGEE_MICROGATEWAY_NODEJS_VERSION is declared
+  NODE_FILENAME="node-v$APIGEE_MICROGATEWAY_NODEJS_VERSION-linux-x64.tar.gz"
+  echo "Fetch Node.js from $NODEJS_PARTIAL_URL$APIGEE_MICROGATEWAY_NODEJS_VERSION/$NODE_FILENAME"
+  wget_and_untar "$NODEJS_PARTIAL_URL$APIGEE_MICROGATEWAY_NODEJS_VERSION/$NODE_FILENAME"
+fi

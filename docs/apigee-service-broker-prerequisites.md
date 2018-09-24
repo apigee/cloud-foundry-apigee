@@ -15,7 +15,7 @@ The following are prequisites for installing and using the Apigee Edge Cloud Fou
 
 - CF CLI
 
-    A recent version of the [CF command line interface](https://github.com/cloudfoundry/cli) that includes required support for route-services operations. Confirmed working with v6.20.0.
+    The most recent version of the [CF command line interface](https://github.com/cloudfoundry/cli) that includes required support for route-services operations. Confirmed working with v6.36.1.
 
 - An active Apigee Edge account.
 

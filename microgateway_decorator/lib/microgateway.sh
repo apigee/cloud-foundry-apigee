@@ -14,5 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-export PATH=$PATH:/home/vcap/app/tmp/node/bin
-exec > >(node ~/microgateway/microgateway.js run)
+echo "Running start up script..."
+
+buildpack_dir=$DEPS_DIR/__BUILDPACK_INDEX__
+export MICROGATEWAY_NODEJS=$buildpack_dir/node/bin/node
+export MICROGATEWAY_SOURCE_DIR=$buildpack_dir/microgateway
+exec > >($MICROGATEWAY_NODEJS $buildpack_dir/decorator/microgateway.js run)

@@ -174,12 +174,7 @@ var configureMicro = function(micro_data, callback){
 }
 
 var startMicro = function(micro_data, callback){
-    var path_additions = [os.homedir() + "/tmp/node/bin", os.homedir() + "/tmp/edgemicro/cli"]
-    process.env.PATH += ":" + path_additions.join(":")
-    
     console.log("Starting Apigee Microgateway...")
-    // const edgemicro_args = ['start', '-o', micro_data.required.APIGEE_MICROGATEWAY_ORG, '-e', micro_data.required.APIGEE_MICROGATEWAY_ENV, '-k', micro_data.required.APIGEE_MICROGATEWAY_KEY, '-s', micro_data.required.APIGEE_MICROGATEWAY_SECRET, '-c', micro_data.required.APIGEE_MICROGATEWAY_CONFIG_DIR]
-    // const start = spawn("edgemicro", edgemicro_args)
     process.env.EDGEMICRO_ENV = micro_data.required.APIGEE_MICROGATEWAY_ENV
     process.env.EDGEMICRO_ORG = micro_data.required.APIGEE_MICROGATEWAY_ORG
     process.env.EDGEMICRO_SECRET = micro_data.required.APIGEE_MICROGATEWAY_SECRET
@@ -189,9 +184,16 @@ var startMicro = function(micro_data, callback){
     if (micro_data.optional.hasOwnProperty("APIGEE_MICROGATEWAY_PROCESSES").length > 0){
         process.env.EDGEMICRO_PROCESSES = micro_data.optional.APIGEE_MICROGATEWAY_PROCESSES
     }
-    
 
-    const start = spawn("node", [os.homedir() + "/tmp/edgemicro/app.js"])
+    if (process.env.MICROGATEWAY_NODEJS === undefined) {
+        callback("The MICROGATEWAY_NODEJS var is not set. This should be the path to the node binary being used for edgemicro")
+    }
+
+    if (process.env.MICROGATEWAY_SOURCE_DIR === undefined) {
+        callback("The MICROGATEWAY_SOURCE_DIR var is not set. This should be the path to the edgemicro source code")
+    }
+
+    const start = spawn(process.env.MICROGATEWAY_NODEJS, [process.env.MICROGATEWAY_SOURCE_DIR + "/app.js"])
 
     start.stdout.on('data', function(data){
         console.log(data.toString())

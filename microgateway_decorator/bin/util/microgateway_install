@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+
+# Copyright 2018 Google LLC
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     https://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# This script installs and sets up apigee microgateway
+
+MICROGATEWAY_DEFAULT_VERSION="v2.5.8"
+MICROGATEWAY_REPO="https://github.com/apigee-internal/microgateway.git"
+
+BUILDPACK_DIR=$1
+BUILD_DIR=$2
+MICROGATEWAY_DIR=$3
+
+function git_checkout {
+  MG_VERSION=$1
+  (cd $MICROGATEWAY_DIR && git checkout tags/$MG_VERSION)
+  if [ $? -eq 0 ]; then
+    return 0
+  else
+    return 1;
+  fi
+}
+
+function get_file_count {
+  dir=$1
+  file=$2
+  echo $(find $dir -name $2 -maxdepth 1  2> /dev/null | wc -l)
+}
+
+function install_microgateway {
+  # local installation if microgateway folder exists in lib directory
+  if [ -d "$BUILDPACK_DIR/lib/microgateway" ]; then
+    echo "Installing Edge Microgateway from lib directory. This might take a bit..."
+    cp -a $BUILDPACK_DIR/lib/microgateway/. $MICROGATEWAY_DIR
+  else #clone from github
+    echo "Cloning Edge Microgateway from Github."
+    git clone $MICROGATEWAY_REPO $MICROGATEWAY_DIR
+  fi
+}
+
+function checkout_microgateway_version {
+  node_modules_count=$(get_file_count $MICROGATEWAY_DIR "node_modules")
+  if [ $node_modules_count -gt 0 ]; then
+    echo "Microgateway dependencies already installed, skipping git checkout."
+    return 0
+  fi
+  # the envrionment variable is not a zero length string
+  if [ ! -z "$APIGEE_MICROGATEWAY_VERSION" ]; then
+    echo "Trying git checkout tags/$APIGEE_MICROGATEWAY_VERSION"
+    git_checkout $APIGEE_MICROGATEWAY_VERSION
+    if [ $? -ne 0  ]; then # version not found then prepend v to tag
+      echo "Trying git checkout tags/v$APIGEE_MICROGATEWAY_VERSION instead."
+      git_checkout "v$APIGEE_MICROGATEWAY_VERSION"
+      if [ $? -ne 0  ]; then
+        echo "The Edge Microgateway tag $APIGEE_MICROGATEWAY_VERSION does not exist." >&2
+        exit 1
+      fi
+    fi
+  else
+    echo "Using the default Edge Microgateway version $MICROGATEWAY_DEFAULT_VERSION."
+    git_checkout $MICROGATEWAY_DEFAULT_VERSION
+    if [ $? -ne 0  ]; then
+        echo "The default Edge Microgateway tag $MICROGATEWAY_DEFAULT_VERSION does not exist." >&2
+        exit 1
+    fi
+  fi
+}
+
+function install_microgateway_deps {
+  # only install dependencies if they are not already installed
+  node_modules_count=$(get_file_count $MICROGATEWAY_DIR "node_modules")
+  if [ $node_modules_count -eq 0 ]; then
+    echo "Installing microgateway dependencies..."
+    npm --prefix $MICROGATEWAY_DIR install
+    if [ $? -ne 0  ]; then
+      echo "npm install of microgateway failed"
+      exit 1
+    fi
+  fi
+}
+
+function install_custom_plugins {
+  for dir in $BUILD_DIR/$APIGEE_MICROGATEWAY_CUST_PLUGINS/*
+  do
+      test -d "$dir" || continue
+      package_json_count=$(get_file_count $dir "package.json")
+      node_modules_count=$(get_file_count $dir "node_modules")
+      # only install if package.json is present and node_modules are not
+      if [[ $package_json_count -gt 0 ]] && [[ $node_modules_count -eq 0 ]]; then
+          npm --prefix $dir install
+          if [ $? -ne 0  ]; then
+            echo "npm install of $dir failed"
+            exit 1
+          fi
+      fi
+  done
+  cp -a $BUILD_DIR/$APIGEE_MICROGATEWAY_CUST_PLUGINS/. $MICROGATEWAY_DIR/plugins
+}
+
+install_microgateway
+checkout_microgateway_version
+install_microgateway_deps
+# check for custom plugins
+if [ "$APIGEE_MICROGATEWAY_CUST_PLUGINS" ]; then
+  install_custom_plugins
+fi
