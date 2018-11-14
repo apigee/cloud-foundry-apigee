@@ -125,7 +125,7 @@ Here, you install Apigee Edge Microgateway and your Cloud Foundry app to the sam
 
 1. Copy the configuration file to the following directory in your Cloud Foundry app: `<microgateway-repo-directory>/<config-directory>`.
 
-1. Edit the configuration file (e.g <org>-<env>-config.yaml) to have the `cloud-foundry-route-service` plugin. For instance:
+1. Edit the configuration file (e.g {org}-{env}-config.yaml) to have the `cloud-foundry-route-service` plugin. For instance:
 
     ```yaml
     edgemicro:
