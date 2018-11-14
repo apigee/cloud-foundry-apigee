@@ -105,7 +105,7 @@ These instructions assume a local [PCF Dev](https://pivotal.io/pcf-dev) environm
 
     ```bash
     $ cf create-service apigee-edge microgateway <service-name> -c \
-        '{"org":<org from service-broker configuration>, "env":<env from service-broker configuration>}'        
+        '{"org":<org from service-broker configuration>, "env":<env from service-broker configuration>}'
     ```
 
 >**Note:** Once you have the service broker installed, you might be interested in using the sample app included in this repository to try it out. To do this, you'd replace the following steps with those in this [tutorial](../samples/org-and-microgateway-sample).
@@ -124,6 +124,19 @@ Here, you install Apigee Edge Microgateway and your Cloud Foundry app to the sam
    ```
 
 1. Copy the configuration file to the following directory in your Cloud Foundry app: `<microgateway-repo-directory>/<config-directory>`.
+
+1. Edit the configuration file (e.g <org>-<env>-config.yaml) to have the `cloud-foundry-route-service` plugin. For instance:
+
+    ```yaml
+    edgemicro:
+        port: 8000
+        max_connections: 1000
+        ...
+        plugins:
+            sequence:
+            - oauth
+            - cloud-foundry-route-service
+    ```
 
 1. Edit the microgateway `manifest.yml` as follows:
 
