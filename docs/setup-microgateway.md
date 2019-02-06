@@ -118,7 +118,7 @@ Here, you install Apigee Edge Microgateway and your Cloud Foundry app to the sam
 1. Clone the Apigee Microgateway Repo:
   
    ```bash
-   $ git clone https://github.com/https://github.com/apigee-internal/microgateway.git
+   $ git clone https://github.com/apigee-internal/microgateway.git
    $ cd microgateway
    $ git checkout tags/v.2.5.4
    ```
