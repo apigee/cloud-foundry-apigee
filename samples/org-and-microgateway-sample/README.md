@@ -115,7 +115,7 @@ The console will display the app's response.
 1. Clone the Apigee Microgateway Repo:
 
    ```bash
-   $ git clone https://github.com/https://github.com/apigee-internal/microgateway.git
+   $ git clone https://github.com/apigee-internal/microgateway.git
    $ cd microgateway
    $ git checkout tags/v.2.5.4
    ```
