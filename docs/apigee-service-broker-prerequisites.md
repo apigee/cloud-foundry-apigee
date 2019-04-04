@@ -3,7 +3,7 @@ The following are prequisites for installing and using the Apigee Edge Cloud Fou
 
 - Route services requires TLS. 
 
-    For SaaS Edge, the environment must have an secure Virtual Host, which is provided by default. Edge Microgateway can be configured with SSL; running it inside Cloud Foundry as an app automatically provides that layer. However, if using the [microgateway-coresident](https://github.com/stevetraut/pivotal-cf-apigee/blob/master/apigee-cf-service-broker/setup-microgateway-decorator.md) plan, you must set the SSL option in your microgateway config file as described [here](http://docs.apigee.com/microgateway/latest/operation-and-configuration-reference-edge-microgateway#configuringsslontheedgemicrogatewayserver).
+    For SaaS Edge, the environment must have an secure Virtual Host, which is provided by default. Edge Microgateway can be configured with SSL; running it inside Cloud Foundry as an app automatically provides that layer. However, if using the [microgateway-coresident](https://github.com/apigee/cloud-foundry-apigee/blob/master/docs/setup-microgateway-coresident.md) plan, you must set the SSL option in your microgateway config file as described [here](http://docs.apigee.com/microgateway/latest/operation-and-configuration-reference-edge-microgateway#configuringsslontheedgemicrogatewayserver).
 
 - Node.js ([Node v4.x or later](https://nodejs.org/en/))
 
