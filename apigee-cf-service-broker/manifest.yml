@@ -1,28 +1,29 @@
 ---
 applications:
 - name: apigee-cf-service-broker
-command: node server.js
-buildpack: nodejs_buildpack
-env:
-  APIGEE_CONFIGURATIONS: | 
-                        [{"org":"test-org",
-                        "env":"test",
-                        "apigee_dashboard_url":"https://onprem.com/platform/#/",
-                        "apigee_mgmt_api_url":"https://onprem.com/v1",
-                        "apigee_proxy_domain":"onprem.net"},
-                        {"org":"amer-demo5",
-                        "env":"test",
-                        "apigee_dashboard_url":"https://enterprise.apigee.com/platform/#/",
-                        "apigee_mgmt_api_url":"https://api.enterprise.apigee.com/v1",
-                        "apigee_proxy_domain":"apigee.net"},
-                        {"org":"cdmo",
-                        "env":"test",
-                        "apigee_dashboard_url":"https://enterprise.apigee.com/platform/#/",
-                        "apigee_mgmt_api_url":"https://api.enterprise.apigee.com/v1",
-                        "apigee_proxy_domain":"apigee.net"},
-                        {"org":"org-name-here",
-                        "env":"env-name-here",
-                        "apigee_dashboard_url":"https://enterprise.apigee.com/platform/#/",
-                        "apigee_mgmt_api_url":"https://api.enterprise.apigee.com/v1",
-                        "apigee_proxy_domain":"apigee.net"}
-                        ]
+  command: node server.js
+  buildpacks: 
+  - nodejs_buildpack
+  env:
+    APIGEE_CONFIGURATIONS: | 
+                          [{"org":"test-org",
+                          "env":"test",
+                          "apigee_dashboard_url":"https://onprem.com/platform/#/",
+                          "apigee_mgmt_api_url":"https://onprem.com/v1",
+                          "apigee_proxy_domain":"onprem.net"},
+                          {"org":"amer-demo5",
+                          "env":"test",
+                          "apigee_dashboard_url":"https://enterprise.apigee.com/platform/#/",
+                          "apigee_mgmt_api_url":"https://api.enterprise.apigee.com/v1",
+                          "apigee_proxy_domain":"apigee.net"},
+                          {"org":"cdmo",
+                          "env":"test",
+                          "apigee_dashboard_url":"https://enterprise.apigee.com/platform/#/",
+                          "apigee_mgmt_api_url":"https://api.enterprise.apigee.com/v1",
+                          "apigee_proxy_domain":"apigee.net"},
+                          {"org":"org-name-here",
+                          "env":"env-name-here",
+                          "apigee_dashboard_url":"https://enterprise.apigee.com/platform/#/",
+                          "apigee_mgmt_api_url":"https://api.enterprise.apigee.com/v1",
+                          "apigee_proxy_domain":"apigee.net"}
+                          ]
