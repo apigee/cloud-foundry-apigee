@@ -1,0 +1,5 @@
+CF_LOGIN=<userlogin-in-cloudfoundry>
+CF_LOGIN_PASSWORD=<user-password-in-cloud-foundry>
+MICRO_C2C_APP_NAME=<host from command output: cf routes>
+BROKER_APP_NAME=<name from command-output: cf apps>
+APPS_BASE_DOMAIN=<name from command-output: cf domains>

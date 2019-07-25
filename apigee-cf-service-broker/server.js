@@ -14,29 +14,30 @@
  * limitations under the License.
  */
 
-
-'use strict'
-
-var express = require('express')
-var api = require('./api/api')
-var catalog = require('./api/catalog')
-var service_instances = require('./api/service_instances')
-var bodyParser = require('body-parser')
-var logger = require('./helpers/logger')
-var util = require('util')
+// const fs = require('fs')
+// const https = require('https');
+const express = require('express')
+const bodyParser = require('body-parser')
+const api = require('./lib/controllers/api/api')
+const catalog = require('./lib/controllers/api/catalog')
+const serviceInstances = require('./lib/controllers/api/service-instances')
+const logger = require('./lib/helpers/logger')
+const config = require('./config/environment')
 
 // restrict to SSL in CF
-function enforceTLS (req, res, next) {
-  var proto = req.get('X-forwarded-proto')
+const enforceTLS = (req, res, next) => {
+  let proto = req.get('X-forwarded-proto')
+
   if (process.env.NODE_ENV === 'TEST') {
     // TODO: would be nice to really test ssl locally
     // if (req.secure) proto = 'https'
     proto = 'https'
   }
+
   if (proto !== 'https') {
     res.status(403)
-    var loggerError = logger.ERR_REQ_INVALID_PROTOCOL()
-    var responseData = {
+    const loggerError = logger.ERR_REQ_INVALID_PROTOCOL()
+    const responseData = {
       msg: loggerError.message
     }
     res.json(responseData)
@@ -45,18 +46,18 @@ function enforceTLS (req, res, next) {
   }
 }
 
-var app = express()
+const app = express()
 app.use(bodyParser.json())
 
 app.use('/', enforceTLS, api)
 app.use('/v2/catalog', enforceTLS, catalog)
-app.use('/v2/service_instances/', enforceTLS, service_instances)
+app.use('/v2/service_instances/', enforceTLS, serviceInstances)
 
 // schema validation
-app.use(function (err, req, res, next) {
-  var responseData
+app.use((err, req, res, next) => {
+  let responseData
   if (err.name === 'JsonSchemaValidation') {
-    var loggerError = logger.ERR_REQ_JSON_SCHEMA_FAIL(err)
+    const loggerError = logger.ERR_REQ_JSON_SCHEMA_FAIL(err)
     res.status(400)
     responseData = {
       msg: loggerError.message,
@@ -70,7 +71,14 @@ app.use(function (err, req, res, next) {
   }
 })
 
-var port = process.env.PORT || 8888
-app.listen(port)
-logger.log.info(util.format('Listening on port %s', port))
+// https.createServer({
+//   key: fs.readFileSync('./server.key'),
+//   cert: fs.readFileSync('./server.cert')
+// }, app)
+//   .listen(config.port);
+
+app.listen(config.port)
+
+logger.log.info(`Listening on port ${config.port}`)
+
 module.exports = app

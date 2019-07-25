@@ -1,0 +1,564 @@
+cf -v create-route dev apps.pcf24.apigee.xyz --hostname edgemicro-app-harper
+REQUEST: [2019-05-31T17:41:47+03:00]
+GET /v2/info HTTP/1.1
+Host: api.system.pcf24.apigee.xyz
+Accept: application/json
+User-Agent: cf/6.44.1+c3b20bfbe.2019-05-08 (go1.12.5; amd64 linux)
+
+RESPONSE: [2019-05-31T17:41:47+03:00]
+HTTP/1.1 200 OK
+Alt-Svc: clear
+Content-Length: 741
+Content-Type: application/json;charset=utf-8
+Date: Fri, 31 May 2019 14:41:47 GMT
+Server: nginx
+Via: 1.1 google
+X-Content-Type-Options: nosniff
+X-Vcap-Request-Id: 79f4fcaa-4b4b-47be-4e19-bc367fce7032::9249ef92-3e3b-4b9a-a5ab-1770c5d20a32
+{
+  "api_version": "2.125.0",
+  "app_ssh_endpoint": "ssh.system.pcf24.apigee.xyz:2222",
+  "app_ssh_host_key_fingerprint": "ef:5a:7f:72:24:1e:18:9c:e0:cc:39:21:a1:47:9a:cf",
+  "app_ssh_oauth_client": "ssh-proxy",
+  "authorization_endpoint": "https://login.system.pcf24.apigee.xyz",
+  "build": "2.4.1-build.1",
+  "description": "https://docs.pivotal.io/pivotalcf/2-3/pcf-release-notes/runtime-rn.html",
+  "doppler_logging_endpoint": "wss://doppler.system.pcf24.apigee.xyz:443",
+  "min_cli_version": "6.23.0",
+  "min_recommended_cli_version": "6.23.0",
+  "name": "Pivotal Application Service",
+  "osbapi_version": "2.14",
+  "routing_endpoint": "https://api.system.pcf24.apigee.xyz/routing",
+  "support": "https://support.pivotal.io",
+  "token_endpoint": "https://uaa.system.pcf24.apigee.xyz",
+  "version": 0
+}
+
+
+REQUEST: [2019-05-31T17:41:47+03:00]
+GET /login HTTP/1.1
+Host: login.system.pcf24.apigee.xyz
+Accept: application/json
+Connection: close
+User-Agent: cf/6.44.1+c3b20bfbe.2019-05-08 (go1.12.5; amd64 linux)
+
+RESPONSE: [2019-05-31T17:41:48+03:00]
+HTTP/1.1 200 OK
+Alt-Svc: clear
+Cache-Control: no-store
+Content-Language: en-US
+Content-Length: 411
+Content-Type: application/json;charset=UTF-8
+Date: Fri, 31 May 2019 14:41:47 GMT
+Set-Cookie: X-Uaa-Csrf=gL1oNY6HMNxEucJCLXWTxr; Max-Age=86400; Expires=Sat, 01-Jun-2019 14:41:48 GMT; Path=/; Secure; HttpOnly
+Strict-Transport-Security: max-age=31536000 ; includeSubDomains
+Via: 1.1 google
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+X-Vcap-Request-Id: 1927171e-dd90-4efe-7a48-968f94a8d23d
+X-Xss-Protection: 1; mode=block
+{
+  "app": {
+    "version": "4.24.0"
+  },
+  "commit_id": "16d9900",
+  "entityID": "http://login.system.pcf24.apigee.xyz",
+  "idpDefinitions": {},
+  "links": {
+    "login": "https://login.system.pcf24.apigee.xyz",
+    "passwd": "/forgot_password",
+    "register": "/create_account",
+    "uaa": "https://uaa.system.pcf24.apigee.xyz"
+  },
+  "prompts": {
+    "password": "[PRIVATE DATA HIDDEN]",
+    "username": [
+      "text",
+      "Email"
+    ]
+  },
+  "timestamp": "2018-11-06T01:20:26+0000",
+  "zone_name": "uaa"
+}
+
+
+Creating route edgemicro-app-harper.apps.pcf24.apigee.xyz for org dev / space dev as brokeruser...
+REQUEST: [2019-05-31T17:41:48+03:00]
+GET /v2/spaces?order-by=name&q=name%3Adev&q=organization_guid%3Ad90cc2e5-3517-4504-aa87-6e68bbd15da6 HTTP/1.1
+Host: api.system.pcf24.apigee.xyz
+Accept: application/json
+Authorization: [PRIVATE DATA HIDDEN]
+User-Agent: cf/6.44.1+c3b20bfbe.2019-05-08 (go1.12.5; amd64 linux)
+
+RESPONSE: [2019-05-31T17:41:48+03:00]
+HTTP/1.1 200 OK
+Alt-Svc: clear
+Content-Length: 1651
+Content-Type: application/json;charset=utf-8
+Date: Fri, 31 May 2019 14:41:48 GMT
+Server: nginx
+Via: 1.1 google
+X-Content-Type-Options: nosniff
+X-Vcap-Request-Id: fd944f2b-9ea9-41b8-5931-68d0f36eebee::dde506c2-8028-44b5-ae4d-00f66ad36722
+{
+  "next_url": null,
+  "prev_url": null,
+  "resources": [
+    {
+      "entity": {
+        "allow_ssh": true,
+        "app_events_url": "/v2/spaces/15ecd7cf-42b0-439d-a009-57df23b9c400/app_events",
+        "apps_url": "/v2/spaces/15ecd7cf-42b0-439d-a009-57df23b9c400/apps",
+        "auditors_url": "/v2/spaces/15ecd7cf-42b0-439d-a009-57df23b9c400/auditors",
+        "developers_url": "/v2/spaces/15ecd7cf-42b0-439d-a009-57df23b9c400/developers",
+        "domains_url": "/v2/spaces/15ecd7cf-42b0-439d-a009-57df23b9c400/domains",
+        "events_url": "/v2/spaces/15ecd7cf-42b0-439d-a009-57df23b9c400/events",
+        "isolation_segment_guid": null,
+        "managers_url": "/v2/spaces/15ecd7cf-42b0-439d-a009-57df23b9c400/managers",
+        "name": "dev",
+        "organization_guid": "d90cc2e5-3517-4504-aa87-6e68bbd15da6",
+        "organization_url": "/v2/organizations/d90cc2e5-3517-4504-aa87-6e68bbd15da6",
+        "routes_url": "/v2/spaces/15ecd7cf-42b0-439d-a009-57df23b9c400/routes",
+        "security_groups_url": "/v2/spaces/15ecd7cf-42b0-439d-a009-57df23b9c400/security_groups",
+        "service_instances_url": "/v2/spaces/15ecd7cf-42b0-439d-a009-57df23b9c400/service_instances",
+        "space_quota_definition_guid": null,
+        "staging_security_groups_url": "/v2/spaces/15ecd7cf-42b0-439d-a009-57df23b9c400/staging_security_groups"
+      },
+      "metadata": {
+        "created_at": "2019-04-19T14:08:18Z",
+        "guid": "15ecd7cf-42b0-439d-a009-57df23b9c400",
+        "updated_at": "2019-04-19T14:08:18Z",
+        "url": "/v2/spaces/15ecd7cf-42b0-439d-a009-57df23b9c400"
+      }
+    }
+  ],
+  "total_pages": 1,
+  "total_results": 1
+}
+
+
+REQUEST: [2019-05-31T17:41:48+03:00]
+GET /v2/shared_domains?q=name+IN+apps.pcf24.apigee.xyz HTTP/1.1
+Host: api.system.pcf24.apigee.xyz
+Accept: application/json
+Authorization: [PRIVATE DATA HIDDEN]
+User-Agent: cf/6.44.1+c3b20bfbe.2019-05-08 (go1.12.5; amd64 linux)
+
+RESPONSE: [2019-05-31T17:41:48+03:00]
+HTTP/1.1 200 OK
+Alt-Svc: clear
+Content-Length: 531
+Content-Type: application/json;charset=utf-8
+Date: Fri, 31 May 2019 14:41:48 GMT
+Server: nginx
+Via: 1.1 google
+X-Content-Type-Options: nosniff
+X-Vcap-Request-Id: ed779c12-aae3-4533-5ca7-9860fb05831f::794fd15d-7f7f-4f5b-bb32-34ca237eb499
+{
+  "next_url": null,
+  "prev_url": null,
+  "resources": [
+    {
+      "entity": {
+        "internal": false,
+        "name": "apps.pcf24.apigee.xyz",
+        "router_group_guid": null,
+        "router_group_type": null
+      },
+      "metadata": {
+        "created_at": "2018-12-21T12:27:12Z",
+        "guid": "bb8dec35-6535-4ca9-8bca-5b84230f394d",
+        "updated_at": "2019-05-04T10:21:01Z",
+        "url": "/v2/shared_domains/bb8dec35-6535-4ca9-8bca-5b84230f394d"
+      }
+    }
+  ],
+  "total_pages": 1,
+  "total_results": 1
+}
+
+
+REQUEST: [2019-05-31T17:41:48+03:00]
+GET /v2/organizations/d90cc2e5-3517-4504-aa87-6e68bbd15da6/private_domains?q=name+IN+apps.pcf24.apigee.xyz HTTP/1.1
+Host: api.system.pcf24.apigee.xyz
+Accept: application/json
+Authorization: [PRIVATE DATA HIDDEN]
+User-Agent: cf/6.44.1+c3b20bfbe.2019-05-08 (go1.12.5; amd64 linux)
+
+RESPONSE: [2019-05-31T17:41:48+03:00]
+HTTP/1.1 200 OK
+Alt-Svc: clear
+Content-Length: 107
+Content-Type: application/json;charset=utf-8
+Date: Fri, 31 May 2019 14:41:48 GMT
+Server: nginx
+Via: 1.1 google
+X-Content-Type-Options: nosniff
+X-Vcap-Request-Id: 205e7bc9-92bf-42c5-5976-baedc98a697d::a5b0e48e-6759-46e2-a780-de016c970556
+{
+  "next_url": null,
+  "prev_url": null,
+  "resources": null,
+  "total_pages": 1,
+  "total_results": 0
+}
+
+
+REQUEST: [2019-05-31T17:41:48+03:00]
+GET /v2/routes?q=domain_guid%3Abb8dec35-6535-4ca9-8bca-5b84230f394d&q=host%3Aedgemicro-app-harper&q=path%3A HTTP/1.1
+Host: api.system.pcf24.apigee.xyz
+Accept: application/json
+Authorization: [PRIVATE DATA HIDDEN]
+User-Agent: cf/6.44.1+c3b20bfbe.2019-05-08 (go1.12.5; amd64 linux)
+
+RESPONSE: [2019-05-31T17:41:48+03:00]
+HTTP/1.1 200 OK
+Alt-Svc: clear
+Content-Length: 107
+Content-Type: application/json;charset=utf-8
+Date: Fri, 31 May 2019 14:41:48 GMT
+Server: nginx
+Via: 1.1 google
+X-Content-Type-Options: nosniff
+X-Vcap-Request-Id: 77ff6d08-bc72-4da4-4d83-3d69e2248979::c78139c9-41f9-406e-acdf-06e75758c5c0
+{
+  "next_url": null,
+  "prev_url": null,
+  "resources": null,
+  "total_pages": 1,
+  "total_results": 0
+}
+
+
+REQUEST: [2019-05-31T17:41:48+03:00]
+GET /v2/routes/reserved/domain/bb8dec35-6535-4ca9-8bca-5b84230f394d?host=edgemicro-app-harper HTTP/1.1
+Host: api.system.pcf24.apigee.xyz
+Accept: application/json
+Authorization: [PRIVATE DATA HIDDEN]
+User-Agent: cf/6.44.1+c3b20bfbe.2019-05-08 (go1.12.5; amd64 linux)
+
+RESPONSE: [2019-05-31T17:41:48+03:00]
+HTTP/1.1 404 Not Found
+Alt-Svc: clear
+Content-Length: 86
+Content-Type: application/json;charset=utf-8
+Date: Fri, 31 May 2019 14:41:48 GMT
+Server: nginx
+Via: 1.1 google
+X-Content-Type-Options: nosniff
+X-Vcap-Request-Id: 69b34b75-ab61-4ff3-57a6-ec48a5ca5d07::b680c427-dc73-471c-8ea7-71ff3a72c968
+{
+  "code": 10000,
+  "description": "Unknown request",
+  "error_code": "CF-NotFound"
+}
+
+
+REQUEST: [2019-05-31T17:41:48+03:00]
+POST /v2/routes HTTP/1.1
+Host: api.system.pcf24.apigee.xyz
+Accept: application/json
+Authorization: [PRIVATE DATA HIDDEN]
+Content-Type: application/json
+User-Agent: cf/6.44.1+c3b20bfbe.2019-05-08 (go1.12.5; amd64 linux)
+{
+  "domain_guid": "bb8dec35-6535-4ca9-8bca-5b84230f394d",
+  "host": "edgemicro-app-harper",
+  "port": null,
+  "space_guid": "15ecd7cf-42b0-439d-a009-57df23b9c400"
+}
+
+
+RESPONSE: [2019-05-31T17:41:49+03:00]
+HTTP/1.1 201 Created
+Alt-Svc: clear
+Content-Length: 769
+Content-Type: application/json;charset=utf-8
+Date: Fri, 31 May 2019 14:41:49 GMT
+Location: /v2/routes/1094e037-3f74-48db-a8ba-a8e71ab39295
+Server: nginx
+Via: 1.1 google
+X-Content-Type-Options: nosniff
+X-Vcap-Request-Id: 6adb9799-0b0b-40ea-63ff-995728fb1417::f58e88ca-75cc-4117-a010-b4018f0ff75f
+{
+  "entity": {
+    "apps_url": "/v2/routes/1094e037-3f74-48db-a8ba-a8e71ab39295/apps",
+    "domain_guid": "bb8dec35-6535-4ca9-8bca-5b84230f394d",
+    "domain_url": "/v2/shared_domains/bb8dec35-6535-4ca9-8bca-5b84230f394d",
+    "host": "edgemicro-app-harper",
+    "path": "",
+    "port": null,
+    "route_mappings_url": "/v2/routes/1094e037-3f74-48db-a8ba-a8e71ab39295/route_mappings",
+    "service_instance_guid": null,
+    "space_guid": "15ecd7cf-42b0-439d-a009-57df23b9c400",
+    "space_url": "/v2/spaces/15ecd7cf-42b0-439d-a009-57df23b9c400"
+  },
+  "metadata": {
+    "created_at": "2019-05-31T14:41:49Z",
+    "guid": "1094e037-3f74-48db-a8ba-a8e71ab39295",
+    "updated_at": "2019-05-31T14:41:49Z",
+    "url": "/v2/routes/1094e037-3f74-48db-a8ba-a8e71ab39295"
+  }
+}
+
+
+Route edgemicro-app-harper.apps.pcf24.apigee.xyz has been created.
+OK
+
+
+cf -v create-route dev apps.pcf24.apigee.xyz --hostname edgemicro-app-harper
+REQUEST: [2019-05-31T17:51:57+03:00]
+GET /v2/info HTTP/1.1
+Host: api.system.pcf24.apigee.xyz
+Accept: application/json
+User-Agent: cf/6.44.1+c3b20bfbe.2019-05-08 (go1.12.5; amd64 linux)
+
+RESPONSE: [2019-05-31T17:51:58+03:00]
+HTTP/1.1 200 OK
+Alt-Svc: clear
+Content-Length: 741
+Content-Type: application/json;charset=utf-8
+Date: Fri, 31 May 2019 14:51:57 GMT
+Server: nginx
+Via: 1.1 google
+X-Content-Type-Options: nosniff
+X-Vcap-Request-Id: d79df8b0-994d-473f-75b9-6c389858cf85::de2c8c08-567b-4160-890d-95839226d721
+{
+  "api_version": "2.125.0",
+  "app_ssh_endpoint": "ssh.system.pcf24.apigee.xyz:2222",
+  "app_ssh_host_key_fingerprint": "ef:5a:7f:72:24:1e:18:9c:e0:cc:39:21:a1:47:9a:cf",
+  "app_ssh_oauth_client": "ssh-proxy",
+  "authorization_endpoint": "https://login.system.pcf24.apigee.xyz",
+  "build": "2.4.1-build.1",
+  "description": "https://docs.pivotal.io/pivotalcf/2-3/pcf-release-notes/runtime-rn.html",
+  "doppler_logging_endpoint": "wss://doppler.system.pcf24.apigee.xyz:443",
+  "min_cli_version": "6.23.0",
+  "min_recommended_cli_version": "6.23.0",
+  "name": "Pivotal Application Service",
+  "osbapi_version": "2.14",
+  "routing_endpoint": "https://api.system.pcf24.apigee.xyz/routing",
+  "support": "https://support.pivotal.io",
+  "token_endpoint": "https://uaa.system.pcf24.apigee.xyz",
+  "version": 0
+}
+
+
+REQUEST: [2019-05-31T17:51:58+03:00]
+GET /login HTTP/1.1
+Host: login.system.pcf24.apigee.xyz
+Accept: application/json
+Connection: close
+User-Agent: cf/6.44.1+c3b20bfbe.2019-05-08 (go1.12.5; amd64 linux)
+
+RESPONSE: [2019-05-31T17:51:58+03:00]
+HTTP/1.1 200 OK
+Alt-Svc: clear
+Cache-Control: no-store
+Content-Language: en-US
+Content-Length: 411
+Content-Type: application/json;charset=UTF-8
+Date: Fri, 31 May 2019 14:51:57 GMT
+Set-Cookie: X-Uaa-Csrf=eeC7q2JU4o6gP4ziWKWNij; Max-Age=86400; Expires=Sat, 01-Jun-2019 14:51:58 GMT; Path=/; Secure; HttpOnly
+Strict-Transport-Security: max-age=31536000 ; includeSubDomains
+Via: 1.1 google
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+X-Vcap-Request-Id: 80ced4fc-126f-44f1-59af-76abb7b133fc
+X-Xss-Protection: 1; mode=block
+{
+  "app": {
+    "version": "4.24.0"
+  },
+  "commit_id": "16d9900",
+  "entityID": "http://login.system.pcf24.apigee.xyz",
+  "idpDefinitions": {},
+  "links": {
+    "login": "https://login.system.pcf24.apigee.xyz",
+    "passwd": "/forgot_password",
+    "register": "/create_account",
+    "uaa": "https://uaa.system.pcf24.apigee.xyz"
+  },
+  "prompts": {
+    "password": "[PRIVATE DATA HIDDEN]",
+    "username": [
+      "text",
+      "Email"
+    ]
+  },
+  "timestamp": "2018-11-06T01:20:26+0000",
+  "zone_name": "uaa"
+}
+
+
+Creating route edgemicro-app-harper.apps.pcf24.apigee.xyz for org dev / space dev as brokeruser...
+REQUEST: [2019-05-31T17:51:58+03:00]
+GET /v2/spaces?order-by=name&q=name%3Adev&q=organization_guid%3Ad90cc2e5-3517-4504-aa87-6e68bbd15da6 HTTP/1.1
+Host: api.system.pcf24.apigee.xyz
+Accept: application/json
+Authorization: [PRIVATE DATA HIDDEN]
+User-Agent: cf/6.44.1+c3b20bfbe.2019-05-08 (go1.12.5; amd64 linux)
+
+RESPONSE: [2019-05-31T17:51:58+03:00]
+HTTP/1.1 200 OK
+Alt-Svc: clear
+Content-Length: 1651
+Content-Type: application/json;charset=utf-8
+Date: Fri, 31 May 2019 14:51:58 GMT
+Server: nginx
+Via: 1.1 google
+X-Content-Type-Options: nosniff
+X-Vcap-Request-Id: e47b0fd5-862e-4035-6538-74d3a91347c2::04af1293-4e62-405c-ac0e-21e6b8083e36
+{
+  "next_url": null,
+  "prev_url": null,
+  "resources": [
+    {
+      "entity": {
+        "allow_ssh": true,
+        "app_events_url": "/v2/spaces/15ecd7cf-42b0-439d-a009-57df23b9c400/app_events",
+        "apps_url": "/v2/spaces/15ecd7cf-42b0-439d-a009-57df23b9c400/apps",
+        "auditors_url": "/v2/spaces/15ecd7cf-42b0-439d-a009-57df23b9c400/auditors",
+        "developers_url": "/v2/spaces/15ecd7cf-42b0-439d-a009-57df23b9c400/developers",
+        "domains_url": "/v2/spaces/15ecd7cf-42b0-439d-a009-57df23b9c400/domains",
+        "events_url": "/v2/spaces/15ecd7cf-42b0-439d-a009-57df23b9c400/events",
+        "isolation_segment_guid": null,
+        "managers_url": "/v2/spaces/15ecd7cf-42b0-439d-a009-57df23b9c400/managers",
+        "name": "dev",
+        "organization_guid": "d90cc2e5-3517-4504-aa87-6e68bbd15da6",
+        "organization_url": "/v2/organizations/d90cc2e5-3517-4504-aa87-6e68bbd15da6",
+        "routes_url": "/v2/spaces/15ecd7cf-42b0-439d-a009-57df23b9c400/routes",
+        "security_groups_url": "/v2/spaces/15ecd7cf-42b0-439d-a009-57df23b9c400/security_groups",
+        "service_instances_url": "/v2/spaces/15ecd7cf-42b0-439d-a009-57df23b9c400/service_instances",
+        "space_quota_definition_guid": null,
+        "staging_security_groups_url": "/v2/spaces/15ecd7cf-42b0-439d-a009-57df23b9c400/staging_security_groups"
+      },
+      "metadata": {
+        "created_at": "2019-04-19T14:08:18Z",
+        "guid": "15ecd7cf-42b0-439d-a009-57df23b9c400",
+        "updated_at": "2019-04-19T14:08:18Z",
+        "url": "/v2/spaces/15ecd7cf-42b0-439d-a009-57df23b9c400"
+      }
+    }
+  ],
+  "total_pages": 1,
+  "total_results": 1
+}
+
+
+REQUEST: [2019-05-31T17:51:58+03:00]
+GET /v2/shared_domains?q=name+IN+apps.pcf24.apigee.xyz HTTP/1.1
+Host: api.system.pcf24.apigee.xyz
+Accept: application/json
+Authorization: [PRIVATE DATA HIDDEN]
+User-Agent: cf/6.44.1+c3b20bfbe.2019-05-08 (go1.12.5; amd64 linux)
+
+RESPONSE: [2019-05-31T17:51:58+03:00]
+HTTP/1.1 200 OK
+Alt-Svc: clear
+Content-Length: 531
+Content-Type: application/json;charset=utf-8
+Date: Fri, 31 May 2019 14:51:58 GMT
+Server: nginx
+Via: 1.1 google
+X-Content-Type-Options: nosniff
+X-Vcap-Request-Id: f5392969-f180-4278-5b59-3526f28be7db::cebb0407-42a5-4779-9efc-8784966720d8
+{
+  "next_url": null,
+  "prev_url": null,
+  "resources": [
+    {
+      "entity": {
+        "internal": false,
+        "name": "apps.pcf24.apigee.xyz",
+        "router_group_guid": null,
+        "router_group_type": null
+      },
+      "metadata": {
+        "created_at": "2018-12-21T12:27:12Z",
+        "guid": "bb8dec35-6535-4ca9-8bca-5b84230f394d",
+        "updated_at": "2019-05-04T10:21:01Z",
+        "url": "/v2/shared_domains/bb8dec35-6535-4ca9-8bca-5b84230f394d"
+      }
+    }
+  ],
+  "total_pages": 1,
+  "total_results": 1
+}
+
+
+REQUEST: [2019-05-31T17:51:58+03:00]
+GET /v2/organizations/d90cc2e5-3517-4504-aa87-6e68bbd15da6/private_domains?q=name+IN+apps.pcf24.apigee.xyz HTTP/1.1
+Host: api.system.pcf24.apigee.xyz
+Accept: application/json
+Authorization: [PRIVATE DATA HIDDEN]
+User-Agent: cf/6.44.1+c3b20bfbe.2019-05-08 (go1.12.5; amd64 linux)
+
+RESPONSE: [2019-05-31T17:51:58+03:00]
+HTTP/1.1 200 OK
+Alt-Svc: clear
+Content-Length: 107
+Content-Type: application/json;charset=utf-8
+Date: Fri, 31 May 2019 14:51:58 GMT
+Server: nginx
+Via: 1.1 google
+X-Content-Type-Options: nosniff
+X-Vcap-Request-Id: bb493b94-833c-4c9a-6217-01a4acce8c81::5c98f3bc-e401-4e54-945f-8abeeb8634b0
+{
+  "next_url": null,
+  "prev_url": null,
+  "resources": null,
+  "total_pages": 1,
+  "total_results": 0
+}
+
+
+REQUEST: [2019-05-31T17:51:58+03:00]
+GET /v2/routes?q=domain_guid%3Abb8dec35-6535-4ca9-8bca-5b84230f394d&q=host%3Aedgemicro-app-harper&q=path%3A HTTP/1.1
+Host: api.system.pcf24.apigee.xyz
+Accept: application/json
+Authorization: [PRIVATE DATA HIDDEN]
+User-Agent: cf/6.44.1+c3b20bfbe.2019-05-08 (go1.12.5; amd64 linux)
+
+RESPONSE: [2019-05-31T17:51:59+03:00]
+HTTP/1.1 200 OK
+Alt-Svc: clear
+Content-Length: 956
+Content-Type: application/json;charset=utf-8
+Date: Fri, 31 May 2019 14:51:58 GMT
+Server: nginx
+Via: 1.1 google
+X-Content-Type-Options: nosniff
+X-Vcap-Request-Id: 98560c58-72fa-4a97-4f96-785017f82668::7d405fa9-0e37-4098-8f59-986424a6c707
+{
+  "next_url": null,
+  "prev_url": null,
+  "resources": [
+    {
+      "entity": {
+        "apps_url": "/v2/routes/1094e037-3f74-48db-a8ba-a8e71ab39295/apps",
+        "domain_guid": "bb8dec35-6535-4ca9-8bca-5b84230f394d",
+        "domain_url": "/v2/shared_domains/bb8dec35-6535-4ca9-8bca-5b84230f394d",
+        "host": "edgemicro-app-harper",
+        "path": "",
+        "port": null,
+        "route_mappings_url": "/v2/routes/1094e037-3f74-48db-a8ba-a8e71ab39295/route_mappings",
+        "service_instance_guid": null,
+        "space_guid": "15ecd7cf-42b0-439d-a009-57df23b9c400",
+        "space_url": "/v2/spaces/15ecd7cf-42b0-439d-a009-57df23b9c400"
+      },
+      "metadata": {
+        "created_at": "2019-05-31T14:41:49Z",
+        "guid": "1094e037-3f74-48db-a8ba-a8e71ab39295",
+        "updated_at": "2019-05-31T14:41:49Z",
+        "url": "/v2/routes/1094e037-3f74-48db-a8ba-a8e71ab39295"
+      }
+    }
+  ],
+  "total_pages": 1,
+  "total_results": 1
+}
+
+
+Route edgemicro-app-harper.apps.pcf24.apigee.xyz already exists.
+
+OK
