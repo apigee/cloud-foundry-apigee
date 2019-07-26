@@ -85,6 +85,10 @@ class Portal {
   *
   * */
   async runBinding (param) {
+    if (!param.portal.with_cf_binding) {
+      logger.log.info('portal.runBinding.skipped')
+      return Promise.resolve({})
+    }
     const cfbinder = new CFBinder()
     try {
       const loginResponse = await cfbinder.login()
@@ -123,7 +127,7 @@ class Portal {
   }
 
   _getOpenApiSpecUrl (param) {
-    let url = `https://${param.portal.target_app_route}.${config.cf.appsBaseDomain}/openapi`
+    let url = `https://${param.portal.target_app_route}.${config.cf.appsBaseDomain}/openApi.json`
 
     return url
   }

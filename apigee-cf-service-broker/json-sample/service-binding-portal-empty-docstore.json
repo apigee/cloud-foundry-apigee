@@ -3,7 +3,7 @@
   "service_id": "5E3F917B-9225-4BE4-802F-8F1491F714C0",
   "plan_id": "04B7CC7F-EE5D-4BF4-A5D7-1C637651F545",
   "bind_resource": {
-    "route": "sample-1.apps.pcf24.apigee.xyz"
+    "route": "sample-1.apps.gilroy.cf-app.com"
   },
   "context": {
     "space_guid": "15ecd7cf-42b0-439d-a009-57df23b9c400"

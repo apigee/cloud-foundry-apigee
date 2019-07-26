@@ -177,9 +177,10 @@ Parameter | Purpose | Allowed Values
 `bearer` | Path to a file containing an authentication token valid for your organization | An authentication token, such as one generated with Apigee's get_token command. The broker does not store any data; it requires credentials and other parameters for each individual `cf` command. Instead of a `bearer` token, credentials can also be expressed as:<ul><li>`basic`: standard HTTP Base-64 encoded username and password for `Authorization: Basic`. Note that this is *not encrypted* and easily converted to clear text. But a jumble of digits and letters may provide some protection in case of momentary exposure (but no better than if the password is already a jumble of digits, letters, and symbols)</li><li>username and password in clear text</li></ul>
 `action` | A value specifying whether to create or bind an API proxy | `proxy` to generate an API proxy; `bind` to bind the service with the proxy; `proxy bind` to generate the proxy and bind with a single command.
 `protocol` | The protocol through which the proxy should be accessed by Cloud Foundry | `http` or `https`; default is `https`.
-`target_app_route` |  The app name with your API, "cf apps" output, column "name"
-`target_app_port` |  The app port
+`target_app_route` |  The app name with your API, "cf apps" output, column "name" 
+`target_app_port` |  The app port 
 `with_docstore` |  Create a folder for app specs | Boolean, default: false
+`with_cf_binding` | Bind all routes with cloud-foundry | Boolean, default: false
 
 ## Unbinding the route service
 

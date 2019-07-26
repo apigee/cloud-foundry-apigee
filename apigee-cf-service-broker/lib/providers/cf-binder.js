@@ -9,16 +9,12 @@ const Apps = require(path.resolve('./lib/providers/cf-nodejs-client/model/cloudc
 const Networking = require(path.resolve('./lib/providers/cf-nodejs-client/model/cloudcontroller/Networking'))
 const logger = require(path.resolve('./lib/helpers/logger'))
 
-const LOGIN_ENDPOINT = 'https://login.system.pcf24.apigee.xyz'
-const CF_API_URL = 'https://api.system.pcf24.apigee.xyz'
-const APPS_INTERNAL_DOMAIN = 'apps.internal'
-
-const uaaService = new CloudFoundryUsersUAA(LOGIN_ENDPOINT)
-const routesService = new CloudFoundryRoutes(CF_API_URL)
-const domainsService = new Domains(CF_API_URL)
-const appsService = new Apps(CF_API_URL)
-const networkingService = new Networking(CF_API_URL)
-const servicePlansService = new ServicePlans(CF_API_URL)
+const uaaService = new CloudFoundryUsersUAA(config.cf.loginEndpoint)
+const routesService = new CloudFoundryRoutes(config.cf.apiUrl)
+const domainsService = new Domains(config.cf.apiUrl)
+const appsService = new Apps(config.cf.apiUrl)
+const networkingService = new Networking(config.cf.apiUrl)
+const servicePlansService = new ServicePlans(config.cf.apiUrl)
 /*
 * @description CF Binder for calls REST cf api
 *
@@ -59,7 +55,7 @@ class CFBinder {
   }
 
   getAppInternalFullHostname () {
-    const result = `${this.appRoute.entity.host}.${APPS_INTERNAL_DOMAIN}`
+    const result = `${this.appRoute.entity.host}.${config.cf.appsInternalDomain}`
 
     return result
   }
@@ -324,7 +320,7 @@ class CFBinder {
       const microcgatewayApp = apps.resources.find(a => a.entity.name === config.cf.microgatewayAppName)
 
       if (!microcgatewayApp) {
-        const error = logger.ERR_CF_EMPTY_APP()
+        const error = logger.ERR_CF_MICROGATEWAY_APP_NAME_UNKNOWN()
 
         return { error }
       }
@@ -393,8 +389,5 @@ class CFBinder {
 }
 
 module.exports = {
-  CFBinder,
-  LOGIN_ENDPOINT,
-  CF_API_URL,
-  APPS_INTERNAL_DOMAIN
+  CFBinder
 }

@@ -62,7 +62,7 @@ function deriveC2CParams (params, req) {
 const derivePortalParams = (params = {}) => {
   const portalParams = {}
 
-  const keys = [ 'with_docstore', 'target_app_route' ]
+  const keys = [ 'with_docstore', 'target_app_route', 'with_cf_binding' ]
 
   keys.forEach((key) => {
     if (params[key]) {
@@ -71,6 +71,9 @@ const derivePortalParams = (params = {}) => {
   })
   if (!params.with_docstore) {
     portalParams.with_docstore = false
+  }
+  if (!params.with_cf_binding) {
+    portalParams.with_cf_binding = false
   }
   portalParams.target_app_port = derivePort(params)
 

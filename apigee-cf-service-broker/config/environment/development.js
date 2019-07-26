@@ -9,7 +9,11 @@ module.exports = {
     password: process.env.CF_LOGIN_PASSWORD,
     appsBaseDomain: process.env.APPS_BASE_DOMAIN,
     microgatewayAppName: process.env.MICROGATEWAY_APP_NAME,
-    brokerAppName: process.env.BROKER_APP_NAME
+    brokerAppName: process.env.BROKER_APP_NAME,
+
+    loginEndpoint: process.env.LOGIN_ENDPOINT,
+    apiUrl: process.env.CF_API_URL,
+    appsInternalDomain: process.env.APPS_INTERNAL_DOMAIN
   },
   auth: {
     securityUserName: process.env.SECURITY_USER_NAME,

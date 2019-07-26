@@ -1,7 +1,7 @@
 const path = require('path')
 const logger = require(path.resolve('./lib/helpers/logger'))
 const config = require(path.resolve('./config/environment'))
-const { CFBinder, APPS_INTERNAL_DOMAIN } = require(path.resolve('./lib/providers/cf-binder'))
+const { CFBinder } = require(path.resolve('./lib/providers/cf-binder'))
 
 class Microc2c {
   // TODO implement me
@@ -59,7 +59,7 @@ class Microc2c {
         targetAppRoute: param.micro_c2c.target_app_route,
         spaceGuid: param.space_guid,
         targetAppPort: param.micro_c2c.target_app_port,
-        domainForSearch: APPS_INTERNAL_DOMAIN
+        domainForSearch: config.cf.appsInternalDomain
       })
       if (result.error) {
         return result

@@ -18,6 +18,11 @@ env:
                         ]
   SECURITY_USER_NAME: admin
   SECURITY_USER_PASSWORD: jijkjijijijijjiji==
-  MICROGATEWAY_APP_NAME: edgemicro-app 
+  MICROGATEWAY_APP_NAME: edgemicro-app-1234
   BROKER_APP_NAME: apigee-cf-service-broker-test
-  APPS_BASE_DOMAIN: apps.pcf24.apigee.xyz
+  APPS_BASE_DOMAIN: apps.gilroy.cf-app.com
+  LOGIN_ENDPOINT: https://login.sys.gilroy.cf-app.com
+  CF_API_URL: https://api.sys.gilroy.cf-app.com
+  CF_LOGIN: <login-to-cf>
+  CF_LOGIN_PASSWORD: <password-to-cf>
+  APPS_INTERNAL_DOMAIN: apps.internal

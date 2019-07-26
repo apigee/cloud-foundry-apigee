@@ -82,7 +82,8 @@ var codes = {
   ERR_PORTAL_PLAN_RUN_BINDING: 'E1026',
   ERR_BIND_RESOURCE_APP_NAME_REQURED: 'E1027',
   ERR_BIND_RESOURCE_TARGET_APP_NAME_REQURED: 'E1028',
-  ERR_MISSING_TARGET_APP_ROUTE: 'E1029'
+  ERR_MISSING_TARGET_APP_ROUTE: 'E1029',
+  ERR_CF_MICROGATEWAY_APP_NAME_UNKNOWN: '1030'
 }
 
 var messages = {
@@ -143,7 +144,8 @@ var messages = {
   E1026: 'Portal plan binding failed with errors',
   E1027: 'For portal plan param target_app_name required',
   E1028: 'Parameter "target_app_name" required',
-  E1029: 'Parameter "target_app_route" required'
+  E1029: 'Parameter "target_app_route" required',
+  E1030: 'Microgateway app name not found in your cf space'
 }
 
 var getMessage = function (code) {
