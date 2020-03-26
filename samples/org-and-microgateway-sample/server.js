@@ -16,6 +16,8 @@
 var express = require('express')
 var bodyParser = require('body-parser')
 var app = express()
+var openApi = require('./public/openApi.json')
+
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
@@ -29,6 +31,11 @@ app.use(function(req, res, next) {
 app.get('/', function (req, res) {
   res.json({ hello: "hello from cf app" })
 })
+
+app.get('/openapi', function (req, res) {
+  res.json(openApi)
+})
+
 
 app.get('/hello', function (req, res) {
   res.json({ hello: "hello world" })

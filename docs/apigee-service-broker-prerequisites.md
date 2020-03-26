@@ -24,5 +24,7 @@ The following are prequisites for installing and using the Apigee Edge Cloud Fou
 - Apigee SSO CLI
 
     The broker will create the (reverse) proxy on Apigee Edge for the app's route. This requires authenticating with Edge; ideally this is done with an authorization token, generated with scripts in the [Apigee SSO CLI bundle](http://docs.apigee.com/api-services/content/using-oauth2-security-apigee-edge-management-api#installingacurlandgettokenutilities). Plain username and password may also be used if necessary.
+    
+- Apigee organization name, created in your apigee account.You will use the name in service bindings.    
 
 With Cloud Foundry, a *service broker* provides a catalog of services, and performs tasks to tie those services with applications and their routes. This broker only supports route services, to use Apigee as a reverse proxy for applications, and follows the standard route service flow.

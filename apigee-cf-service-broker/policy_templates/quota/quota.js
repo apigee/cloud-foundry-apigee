@@ -15,7 +15,7 @@
  */
 
 var builder = require('xmlbuilder')
-var random = require('../../util/random.js')
+var random = require('../../lib/helpers/random.js')
 
 module.exports = {
   quotaTemplate: quotaTemplate,

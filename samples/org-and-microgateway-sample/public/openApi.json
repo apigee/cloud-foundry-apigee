@@ -10,7 +10,8 @@
     "host": "127.0.0.1:3000",
     "basePath": "/",
     "schemes": [
-        "http"
+        "http",
+        "https"
     ],
     "consumes": [
         "application/json",
@@ -214,13 +215,8 @@
                         }
                     }
                 },
-                "security": [
-                    {
-                        "mySecureApi1": []
-                    }
-                ],
                 "summary": "delete User Info",
-                "d": "deleteUserInfo",
+                "operationId": "deleteUserInfo",
                 "parameters": [
                     {
                         "name": "name",

@@ -16,7 +16,7 @@
 
 var badger = require('istanbul-cobertura-badger')
 var path = require('path')
-var logger = require('../helpers/logger')
+var logger = require('../lib/helpers/logger')
 var opts = {
   destinationDir: path.resolve(__dirname, '..', 'test'), // REQUIRED PARAMETER!
   istanbulReportFile: path.resolve(__dirname, '..', 'coverage', 'cobertura-coverage.xml'),
