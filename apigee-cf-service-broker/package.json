@@ -34,7 +34,7 @@
     "swagger-parser": "^3.4.0",
     "uuid":"^3.3.2",
     "xmlbuilder": "^4.2.1",
-    "xmldom": "^0.1.22"
+    "xmldom": "^0.5.0"
   },
   "devDependencies": {
     "chai": "^3.4.1",
