@@ -1,0 +1,20 @@
+{
+  "service_id": "5E3F917B-9225-4BE4-802F-8F1491F714C0",
+  "plan_id": "2A7D9A35-1CB3-4E05-8085-CC0100331A96",
+  "bind_resource": { "route": "sample-4.apps.pcf24.apigee.xyz" },
+  "context": {
+    "platform": "cloudfoundry",
+    "organization_guid": "d90cc2e5-3517-4504-aa87-6e68bbd15da6",
+    "space_guid": "15ecd7cf-42b0-439d-a009-57df23b9c400"
+  },
+  "parameters": {
+    "org": "yauhenikisialiou-eval",
+    "env": "test",
+    "micro_c2c": "c2c-test-service",
+    "target_app_route": "sample",
+    "target_app_port": "8080",
+    "action": "bind proxy",
+    "protocol": "http",
+    "bearer": "<get_token>"
+  }
+}

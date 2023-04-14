@@ -1,29 +1,28 @@
 ---
 applications:
-- name: apigee-cf-service-broker
-  command: node server.js
-  buildpacks: 
-  - nodejs_buildpack
-  env:
-    APIGEE_CONFIGURATIONS: | 
-                          [{"org":"test-org",
-                          "env":"test",
-                          "apigee_dashboard_url":"https://onprem.com/platform/#/",
-                          "apigee_mgmt_api_url":"https://onprem.com/v1",
-                          "apigee_proxy_domain":"onprem.net"},
-                          {"org":"amer-demo5",
-                          "env":"test",
-                          "apigee_dashboard_url":"https://enterprise.apigee.com/platform/#/",
-                          "apigee_mgmt_api_url":"https://api.enterprise.apigee.com/v1",
-                          "apigee_proxy_domain":"apigee.net"},
-                          {"org":"cdmo",
-                          "env":"test",
-                          "apigee_dashboard_url":"https://enterprise.apigee.com/platform/#/",
-                          "apigee_mgmt_api_url":"https://api.enterprise.apigee.com/v1",
-                          "apigee_proxy_domain":"apigee.net"},
-                          {"org":"org-name-here",
-                          "env":"env-name-here",
-                          "apigee_dashboard_url":"https://enterprise.apigee.com/platform/#/",
-                          "apigee_mgmt_api_url":"https://api.enterprise.apigee.com/v1",
-                          "apigee_proxy_domain":"apigee.net"}
-                          ]
+- name: apigee-cf-service-broker-test
+command: node server.js
+buildpack: nodejs_buildpack
+env:
+  APIGEE_CONFIGURATIONS: | 
+                        [{"org":"cdmo",
+                        "env":"test",
+                        "apigee_dashboard_url":"https://onprem.com/platform/#/",
+                        "apigee_mgmt_api_url":"https://api.enterprise.apigee.com/v1",
+                        "apigee_proxy_domain":"onprem.net"},
+                        {"org":"somebody-eval",
+                        "env":"test",
+                        "apigee_dashboard_url":"https://enterprise.apigee.com/platform/#/",
+                        "apigee_mgmt_api_url":"https://api.enterprise.apigee.com/v1",
+                        "apigee_proxy_domain":"apigee.net"}
+                        ]
+  SECURITY_USER_NAME: admin
+  SECURITY_USER_PASSWORD: jijkjijijijijjiji==
+  MICROGATEWAY_APP_NAME: edgemicro-app-1234
+  BROKER_APP_NAME: apigee-cf-service-broker-test
+  APPS_BASE_DOMAIN: apps.gilroy.cf-app.com
+  LOGIN_ENDPOINT: https://login.sys.gilroy.cf-app.com
+  CF_API_URL: https://api.sys.gilroy.cf-app.com
+  CF_LOGIN: <login-to-cf>
+  CF_LOGIN_PASSWORD: <password-to-cf>
+  APPS_INTERNAL_DOMAIN: apps.internal
